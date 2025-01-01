@@ -882,7 +882,7 @@
                           <a-select>
                             <a-select-option></a-select-option>
                           </a-select> -->
-                          <a-select v-model:value="features" mode="multiple" :max-tag-count="5" placeholder="选择需要提取的特征" style="width: 90%;">
+                          <a-select v-model:value="featuresToExtract" mode="multiple" :max-tag-count="5" placeholder="选择需要提取的特征" style="width: 90%;">
                             <a-select-option
                               v-for="(value, key) in modeling_nodeList[parameter_dict[transfer['特征提取']]].nodeInfo.parameters[transfer['特征提取']]"
                               :key="key"
@@ -1680,7 +1680,7 @@
               allow-clear
               :tree-data="filteredDataSource"
               tree-node-filter-prop="label"
-              @select="handleSelectType"
+              
           >
             <template #title="{ value: val, label }">
               <!-- <b v-if="val === 'parent 1-1'" style="color: #08c">unknown</b> -->
@@ -1770,10 +1770,10 @@ const handleLoadModel = (store: any) => {
   //要执行两遍才会渲染上
   restoreCanvas(objects)
   // 使用setTimeout等待0.5秒
-  setTimeout(() => {
-    // 0.5秒后执行的操作
-    restoreCanvas(objects)
-  }, 500);
+  // setTimeout(() => {
+  //   // 0.5秒后执行的操作
+  //   restoreCanvas(objects)
+  // }, 500);
 
   handleClear()
   updateStatus('当前模型已保存')
@@ -2147,14 +2147,14 @@ function onDragStart(event, algorithms, node, which_init_method, type) {
     }
     // 针对时域或是频域特征给出不同的可选特征
     if (nodeInfo.label_display.indexOf('时域和频域') > -1) {
-      features.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
+      featuresToExtract.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
         '波形因子', '峰值因子', '脉冲因子', '裕度因子', '重心频率', '均方频率', '均方根频率', '频率方差', '频率标准差', '谱峭度的均值', '谱峭度的峰度']
     } else {
       if (nodeInfo.label_display.indexOf('时域特征') > -1) {
-        features.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
+        featuresToExtract.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
           '波形因子', '峰值因子', '脉冲因子', '裕度因子']
       } else if (nodeInfo.label_display.indexOf('频域特征') > -1) {
-        features.value = ['重心频率', '均方频率', '均方根频率', '频率方差', '频率标准差', '谱峭度的均值', '谱峭度的峰度']
+        featuresToExtract.value = ['重心频率', '均方频率', '均方根频率', '频率方差', '频率标准差', '谱峭度的均值', '谱峭度的峰度']
       }
     }
 
@@ -2411,7 +2411,7 @@ function checkModelParam() {
       } else if (dict.nodeInfo.id == '1.2') {
         // 检查特征提取参数设置
 
-        if (!features.value.length) {
+        if (!featuresToExtract.value.length) {
           return false
         }
       } else if(dict.nodeInfo.id == '1.4'){
@@ -3289,18 +3289,18 @@ function buildContentJson() {
       // 选择特征提取需要提取的参数
       if (dict.nodeInfo.id == '1.2') {
         let params: Object = dict.nodeInfo.parameters[dict.nodeInfo.use_algorithm]
-        if (!features.value.length) {
+        if (!featuresToExtract.value.length) {
           ElMessage({
             message: '请设置每个算法的必选属性',
             type: 'error'
           })
           return false
         }
-        console.log('features: ', features.value)
+        console.log('features: ', featuresToExtract.value)
         for(let key of Object.keys(params)){
           params[key] = false
         }
-        features.value.forEach(element => {
+        featuresToExtract.value.forEach(element => {
           if (params[element] == false) {
             console.log(' element设为真',element)
             params[element] = true
@@ -3519,7 +3519,7 @@ import {useRunProcess} from './vueflow/useRunProcess'
 import {useShuffle} from './vueflow/useShuffle'
 import {useLayout} from './vueflow/useLayout'
 import CustomForm from "@/components/vueflow/CustomForm.vue";
-import { get, result } from 'lodash';
+import { get, keyBy, result } from 'lodash';
 
 const cancelOnError = ref(true)
 const shuffle = useShuffle()
@@ -3596,6 +3596,19 @@ watch(modeling_nodeList, (newVal, oldVal) => {
     })
 
     addedItems.forEach(item => {
+      if(item.nodeInfo.id=='1.2'){
+      console.log("进入1.2",)
+         transfer.value['特征提取'] = item.nodeInfo.use_algorithm
+    }
+    if(item.nodeInfo.id=='1.3'){
+      transfer.value['特征选择'] = item.nodeInfo.use_algorithm
+    }
+    if(item.nodeInfo.id=='1.4'){
+      transfer.value['小波变换'] = item.nodeInfo.use_algorithm
+    }
+    if(item.nodeInfo.id=='1.5'){
+      transfer.value['无量纲化'] = item.nodeInfo.use_algorithm
+    }
       containsMenuSettings.value.push(item.nodeInfo.id);
 
     })
@@ -4627,7 +4640,7 @@ const clickAtSecondMenu = (option: any) => {
 // 特征提取所选择的特征
 // const features = ref(['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
 //   '波形因子', '峰值因子', '脉冲因子', '裕度因子', '重心频率', '均方频率', '均方根频率', '频率方差', '频率标准差', '谱峭度的均值', '谱峭度的峰度'])
-const features = ref([])
+const featuresToExtract = ref([])
 
 //双向链表用于存储调用的模块顺序
 class ListNode {
@@ -6017,14 +6030,14 @@ const handleDragend = (ev, algorithm, node) => {
 
   // 针对时域或是频域特征给出不同的可选特征
   if (nodeInfo.label_display.indexOf('时域和频域') > -1) {
-    features.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
+    featuresToExtract.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
       '波形因子', '峰值因子', '脉冲因子', '裕度因子', '重心频率', '均方频率', '均方根频率', '频率方差', '频率标准差', '谱峭度的均值', '谱峭度的峰度']
   } else {
     if (nodeInfo.label_display.indexOf('时域特征') > -1) {
-      features.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
+      featuresToExtract.value = ['均值', '方差', '标准差', '峰度', '偏度', '四阶累积量', '六阶累积量', '最大值', '最小值', '中位数', '峰峰值', '整流平均值', '均方根', '方根幅值',
         '波形因子', '峰值因子', '脉冲因子', '裕度因子']
     } else if (nodeInfo.label_display.indexOf('频域特征') > -1) {
-      features.value = ['重心频率', '均方频率', '均方根频率', '频率方差', '频率标准差', '谱峭度的均值', '谱峭度的峰度']
+      featuresToExtract.value = ['重心频率', '均方频率', '均方根频率', '频率方差', '频率标准差', '谱峭度的均值', '谱峭度的峰度']
     }
   }
   // console.log(nodeInfo)
@@ -6138,7 +6151,7 @@ const checkModelParams = () => {
         }
       } else if (dict.id == '1.2') {
         // 检查特征提取参数设置
-        if (!features.value.length) {
+        if (!featuresToExtract.value.length) {
           return false
         }
       } else if(dict.id == '1.4'){
@@ -6198,14 +6211,14 @@ const saveModelSetting = (saveModel, schedule) => {
     // 选择特征提取需要提取的参数
     if (dict.id == '1.2') {
       let params = dict.parameters[dict.use_algorithm]
-      if (!features.value.length) {
+      if (!featuresToExtract.value.length) {
         ElMessage({
           message: '请设置每个算法的必选属性',
           type: 'error'
         })
         return
       }
-      features.value.forEach(element => {
+      featuresToExtract.value.forEach(element => {
         if (params[element] == false) {
           params[element] = true
         }
@@ -6302,7 +6315,8 @@ const saveModelConfirm = async (formEl: FormInstance | undefined) => {
       let data = new FormData()
       data.append('model_name', modelInfoForm.value.name)
       let nodelistInfo = toObject()
-      let modelInfo = {"nodeList": nodelistInfo, "connection": contentJson.schedule}
+      // let modelInfo = {"nodeList": nodelistInfo, "connection": contentJson.schedule}
+      let modelInfo = {"nodeList": nodelistInfo, "modelConfig": contentJson}
       data.append('model_info', JSON.stringify(modelInfo))
       data.append('description', modelInfoForm.value.description)
 
@@ -6313,8 +6327,6 @@ const saveModelConfirm = async (formEl: FormInstance | undefined) => {
       console.log('saveModelConfirm parentNodeValue: ', parentNodeValue)
       data.append('treeName', treeName)
       data.append('parentNode', parentNodeValue)
-
-      // 获取树名和节点值
 
       api.post('/user/save_model/', data,
           {
@@ -7834,23 +7846,56 @@ const modelLoaded = ref('无')  // 已加载的历史模型
 let modelLoadedId = ''
 
 //恢复画布
-function restoreCanvas(objects) {
-
+async function restoreCanvas(objects) {
+  
   if (objects.nodeList) {
-    fromObject(objects.nodeList)
+    await fromObject(objects.nodeList)
   }
+  console.log('传递的数组',modeling_nodeList.value)
   handleClear()
   updateStatus('当前模型已保存')
   modelHasBeenSaved = true
+  modelHasBeenChecked.value = true
   canStartProcess.value = false
 
   console.log('使用的模型信息，并根据此再次构建contentjson',objects)
 
   console.log('边的信息:', modeling_nodeList.value)
-  buildContentJson()
+  // buildContentJson()
+
   // saveModelSetting(false, connection)
-  console.log('objects.connection:', objects.connection)
-  contentJson.schedule = objects.connection
+  // console.log('objects.connection:', objects.modelConfig)
+  
+  Object.assign(contentJson, objects.modelConfig)
+
+  // 恢复特定参数
+  // featuresToExtract.value = modeling_nodeList.value.map(node => {
+  //   if (node.nodeInfo.id === '1.2'){
+  //     return node.nodeInfo.parameters[node.nodeInfo.use_algorithm]
+  //   }
+  // })
+  modeling_nodeList.value.forEach(node => {
+    if (node.nodeInfo.id === '1.2'){
+      var features = node.nodeInfo.parameters[node.nodeInfo.use_algorithm]
+      
+      console.log("features: ", features)
+      // for(key in features){
+      //   if (features.key){
+      //     featuresToExtract.value.push(key)
+      //   }
+      // }
+
+      Object.keys(features).forEach(key => {
+        if(features[key] == true){
+          featuresToExtract.value.push(key)
+        }
+      });
+    }
+  });
+
+  // console.log("featuresToExtract: ", featuresToExtract.value)
+
+  // contentJson = objects.modelConfig
   modelSetup.value = true
 }
 
