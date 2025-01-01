@@ -708,7 +708,7 @@
                   <!-- 自定义节点 -->
                   <template #node-menu="props">
                     <!-- <ModelingCustomNode :id="props.id" :data="props.data"/> -->
-                    <ModelingCustomNode :id="props.id" :data="props.data" @showResults="handleNodeClick"/>
+                    <ModelingCustomNode :id="props.id" :userRole="userRole" :data="props.data" @showResults="handleNodeClick"/>
                   </template>
                   <!-- 自定义边 -->
                   <template #edge-button="buttonEdgeProps">
@@ -722,7 +722,7 @@
                         :target-position="buttonEdgeProps.targetPosition"
                         :marker-end="buttonEdgeProps.markerEnd"
                         :style="buttonEdgeProps.style"
-                        :remove-btn-disabled="removeBtnDisabled"
+                        :remove-btn-disabled="userRole === 'user'"
                     />
                   </template>
                 </VueFlow>
@@ -2169,7 +2169,14 @@ function onDragStart(event, algorithms, node, which_init_method, type) {
       console.log("找到的算法文件", parametersKey); // 输出: ['private_fault_diagnosis_deeplearning', 'private_fault_diagnosis_machine_learning']
     }
     
-    node.parameters[parametersKey] = node.alias 
+    // 部分要单独赋值参数
+    if (node.label == '无量纲化'){
+      // 使用的算法以及是否使用训练的数据
+      let paramsForDimensionless = { algorithm: node.alias, useLog: false }
+      node.parameters[parametersKey] = paramsForDimensionless
+    }else{
+      node.parameters[parametersKey] = node.alias 
+    }
     // 拖拽进来相对于地址栏偏移量
     console.log("add增值", node)
     const evClientX = event.clientX
@@ -2414,19 +2421,28 @@ function checkModelParam() {
         if (!featuresToExtract.value.length) {
           return false
         }
-      } else if(dict.nodeInfo.id == '1.4'){
-         console.log('小波变换单独处理',modeling_nodeList.value)
+      } else if (dict.nodeInfo.id == '1.4'){
+        //  console.log('小波变换单独处理',modeling_nodeList.value)
          let parameters = dict.nodeInfo.parameters
-         console.log('小波单独构建的parameters',parameters)
-      }else if(dict.nodeInfo.id == '1.5'){
-         console.log('无量纲单独处理',modeling_nodeList.value)
+        //  console.log('小波单独构建的parameters',parameters)
+      } else if (dict.nodeInfo.id == '1.5'){
+        // 小波变换单独处理
+        //  console.log('无量纲单独处理',modeling_nodeList.value)
          let parameters = dict.nodeInfo.parameters
-         console.log('无量纲构建的parameters',parameters)
-      }else{
-      // 检查一般算法模块的参数设置，参数设置不能为空
-      // 
-        if (!dict.nodeInfo.use_algorithm.includes('private_') && !dict.nodeInfo.use_algorithm.includes('extra_'))
+        //  console.log('无量纲构建的parameters',parameters)
+        // 小波变换增值组件参数更改
+        // if (dict.nodeInfo.use_algorithm.includes('private_') || dict.nodeInfo.use_algorithm.includes('extra_')){
+
+        //   let paramsForDimensionless = { algorithm: dict.nodeInfo.parameters[dict.nodeInfo.use_algorithm], useLog: false }
+        // }
+      }else {
+
+        // 检查一般算法模块的参数设置，参数设置不能为空
+        if (!dict.nodeInfo.use_algorithm.includes('private_') && !dict.nodeInfo.use_algorithm.includes('extra_')){
           dict.nodeInfo.parameters[dict.nodeInfo.use_algorithm] = dict.nodeInfo.use_algorithm
+        }
+        
+
         let parameters = dict.nodeInfo.parameters[dict.nodeInfo.use_algorithm]
         console.log('parameters: ', parameters)
         if (!parameters) {
@@ -2540,13 +2556,20 @@ function checkModelOrder() {
   // } else{
     //针对多个模块
   // 形成表示具体算法模块连接顺序的字符串
+
   for (let i = 0; i < contentJson.schedule.length; i++) {
     let module = contentJson.schedule[i]
     console.log("checkModelOrder module: ", module)
-    let algorithmsS = modeling_nodeList.value.find(item => item.nodeInfo.label == module)
-    console.log("algorithmsS: ", algorithmsS)
-    algorithmSchedule.push(algorithmsS.nodeInfo.label_display)
-    console.log("checkModelOrder algorithmsS: ", algorithmsS)
+    
+    let nodeFound = modeling_nodeList.value.find(item => item.nodeInfo.label == module)
+    if (nodeFound.nodeInfo.use_algorithm.match('machine_learning')){
+      algorithmSchedule.push(nodeFound.nodeInfo.label_display + '机器学习')
+    }else if (nodeFound.nodeInfo.use_algorithm.match('deep_learning')){
+      algorithmSchedule.push(nodeFound.nodeInfo.label_display + '深度学习')
+    }
+    console.log("algorithmsS: ", nodeFound)
+    algorithmSchedule.push(nodeFound.nodeInfo.label_display)
+    console.log("checkModelOrder algorithmsS: ", nodeFound)
     moduleSchedule.push(module)
   }
   
@@ -2570,6 +2593,8 @@ function checkModelOrder() {
         return false
       }
     }
+
+    // 去除检查字符串中的数据源
     moduleStr = moduleStr.replace('数据源', '')
     algorithmStr = algorithmStr.replace('数据源', '')
     console.log('moduleStr: ', moduleStr)
@@ -2577,7 +2602,7 @@ function checkModelOrder() {
     // 首先判断模型中是否存在除了数据源之外的1个以上的模块，如果模型中只有一个模块，判断其是否可以独立地运行而不需要其他模块的支持
     if (modeling_nodeList.value.length == 2) {
       if (canRunSoloModule(moduleStr, algorithmStr)){
-        // 如果模块可以单独运行，再进行模型中各个模块的参数设置的检查
+        // 如果模块可以单独运行，再检查模型中各个模块的参数设置
         let checkParamsRight = checkModelParam()
         let isLofical_completeness = toObject().nodes.length-toObject().edges.length
         if (checkParamsRight && (isLofical_completeness==1)) {
@@ -2597,6 +2622,7 @@ function checkModelOrder() {
           return false
         }
       }else{
+        // 针对深度学习的新增组件单独处理
 
         let tip
         if (moduleStr.match('故障诊断')) {
@@ -3282,6 +3308,8 @@ function buildContentJson() {
 
       contentJson.algorithms[dict.nodeInfo.label] = dict.nodeInfo.use_algorithm
       console.log("contentJson: ", contentJson)
+
+      // 构建modules
       if (!contentJson.modules.includes(dict.nodeInfo.label) && dict.nodeInfo.id !== '4') {
         contentJson.modules.push(dict.nodeInfo.label);
       }
@@ -3309,6 +3337,8 @@ function buildContentJson() {
         contentJson.parameters[dict.nodeInfo.use_algorithm] = params
         continue
       }
+
+      // 一般的模块的参数
       contentJson.parameters[dict.nodeInfo.use_algorithm] = dict.nodeInfo.parameters[dict.nodeInfo.use_algorithm]
 
     }
@@ -3594,7 +3624,7 @@ watch(modeling_nodeList, (newVal, oldVal) => {
     modeling_nodeList.value.forEach((items,index) => {
         parameter_dict.value[items.nodeInfo.use_algorithm] = index
     })
-
+    let displayParamsConfigMenuItem = true
     addedItems.forEach(item => {
       if(item.nodeInfo.id=='1.2'){
       console.log("进入1.2",)
@@ -3605,12 +3635,16 @@ watch(modeling_nodeList, (newVal, oldVal) => {
     }
     if(item.nodeInfo.id=='1.4'){
       transfer.value['小波变换'] = item.nodeInfo.use_algorithm
+      if (item.nodeInfo.use_algorithm.includes('private_') || item.nodeInfo.use_algorithm.includes('extra_')){
+        displayParamsConfigMenuItem = false
+      }
     }
     if(item.nodeInfo.id=='1.5'){
       transfer.value['无量纲化'] = item.nodeInfo.use_algorithm
     }
-      containsMenuSettings.value.push(item.nodeInfo.id);
-
+      if (displayParamsConfigMenuItem){
+        containsMenuSettings.value.push(item.nodeInfo.id);
+      }
     })
     
   } else {
@@ -4185,65 +4219,65 @@ const extraAlgorithmStatement = ref({})
 // 额外算法的描述
 // const extraAlgorithmStatement = ref('')
 
-const getExtraAlgorithm = (item: any) => {
+// const getExtraAlgorithm = (item: any) => {
 
-  let algorithmTypeMapping = {
-    '插值处理': "private_interpolation", '特征选择': 'extra_feature_selection',
-    '特征提取': 'private_feature_extraction', '无量纲化': 'private_scale',
-    '小波变换': 'extra_wavelet_transform', '故障诊断': 'private_fault_diagnosis',
-    '故障预测': 'private_fault_prediction', '健康评估': 'extra_health_evaluation'
-  }
+//   let algorithmTypeMapping = {
+//     '插值处理': "private_interpolation", '特征选择': 'extra_feature_selection',
+//     '特征提取': 'private_feature_extraction', '无量纲化': 'private_scale',
+//     '小波变换': 'extra_wavelet_transform', '故障诊断': 'private_fault_diagnosis',
+//     '故障预测': 'private_fault_prediction', '健康评估': 'extra_health_evaluation'
+//   }
 
 
-  //获取私有算法列表
-  // 如果是故障诊断的私有算法，则需要根据具体是机器学习的故障诊断还是深度学习的故障诊断进行分类
-  var algorithmType  // 私有算法类型
-  if (item.label != '故障诊断') {
-    algorithmType = algorithmTypeMapping[item.label]
-  } else {
-    if (item.label_display.indexOf('机器学习') != -1) {
-      algorithmType = 'private_fault_diagnosis_ml'  //机器学习算法的故障诊断
-    } else {
-      algorithmType = 'private_fault_diagnosis_dl'  //深度学习算法的故障诊断
-    }
-  }
+//   //获取私有算法列表
+//   // 如果是故障诊断的私有算法，则需要根据具体是机器学习的故障诊断还是深度学习的故障诊断进行分类
+//   var algorithmType  // 私有算法类型
+//   if (item.label != '故障诊断') {
+//     algorithmType = algorithmTypeMapping[item.label]
+//   } else {
+//     if (item.label_display.indexOf('机器学习') != -1) {
+//       algorithmType = 'private_fault_diagnosis_ml'  //机器学习算法的故障诊断
+//     } else {
+//       algorithmType = 'private_fault_diagnosis_dl'  //深度学习算法的故障诊断
+//     }
+//   }
 
-  api.get('/user/user_fetch_private_algorithm?algorithm_type=' + algorithmType).then((response) => {
-    if (response.data.code == 200) {
-      // 将字符串数组转换为对象数组
-      const algorithmList = response.data.algorithmList
-      console.log("algorithmList: ", algorithmList)
-      const algorithms = algorithmList.map(item => ({label: item.algorithmAlias}))
-      // extraAlgorithmStatement.value = algorithmList.map(item => ( { 'item.algorithmAlias': item.algorithmStatement }))
+//   api.get('/user/user_fetch_private_algorithm?algorithm_type=' + algorithmType).then((response) => {
+//     if (response.data.code == 200) {
+//       // 将字符串数组转换为对象数组
+//       const algorithmList = response.data.algorithmList
+//       console.log("algorithmList: ", algorithmList)
+//       const algorithms = algorithmList.map(item => ({label: item.algorithmAlias}))
+//       // extraAlgorithmStatement.value = algorithmList.map(item => ( { 'item.algorithmAlias': item.algorithmStatement }))
 
-      algorithmList.forEach(element => {
-        extraAlgorithmStatement.value[element.algorithmAlias] = element.algorithmStatement
-      });
+//       algorithmList.forEach(element => {
+//         extraAlgorithmStatement.value[element.algorithmAlias] = element.algorithmStatement
+//       });
 
-      console.log(extraAlgorithmStatement.value)
-      privateAlgorithmList.value.length = 0
-      privateAlgorithmList.value = algorithms
+//       console.log(extraAlgorithmStatement.value)
+//       privateAlgorithmList.value.length = 0
+//       privateAlgorithmList.value = algorithms
 
-    }
-    if (response.data.code == 401) {
-      ElMessageBox.alert('登录状态已失效，请重新登陆', '提示',
-          {
-            confirmButtonText: '确定',
-            callback: (action: Action) => {
-              router.push('/')
-            }
-          }
-      )
-    }
+//     }
+//     if (response.data.code == 401) {
+//       ElMessageBox.alert('登录状态已失效，请重新登陆', '提示',
+//           {
+//             confirmButtonText: '确定',
+//             callback: (action: Action) => {
+//               router.push('/')
+//             }
+//           }
+//       )
+//     }
 
-  })
-      .catch(error => {
-        ElMessage({
-          message: '获取私有算法列表失败,' + error,
-          type: 'error'
-        })
-      })
-}
+//   })
+//       .catch(error => {
+//         ElMessage({
+//           message: '获取私有算法列表失败,' + error,
+//           type: 'error'
+//         })
+//       })
+// }
 
 
 // 保存模型时提交的模型名的规则验证

@@ -55,9 +55,29 @@
                 <el-icon @click="appendNodeToTree(data)" :style="{ color: '#67c23a' }" v-if="data.disabled === true">
                   <Plus />
                 </el-icon>
-                <el-icon @click="removeNodeOfTree(node, data)" :style="{ color: '#f56c6c' }">
-                  <Delete />
-                </el-icon>
+                
+                <el-popconfirm
+                  title="你确定要删除该数据文件吗"
+                  @confirm="removeNodeOfTree(node, data)"
+                >
+                  <template #reference>
+                    <el-icon :style="{ color: '#f56c6c' }">
+                      <Delete />
+                    </el-icon>
+                  </template>
+                  <template #actions="{ confirm, cancel }">
+                    <el-row>
+                      <el-col :span="12">
+                        <el-button size="small" @click="cancel">取消</el-button>
+                      </el-col>
+                      <el-col :span="12">
+                        <el-button type="primary" size="small" @click="confirm">
+                          确定
+                        </el-button>
+                      </el-col>
+                    </el-row>
+                  </template>
+                </el-popconfirm>
                 <el-icon @click="editOfTree(node, data)" :style="{ color: '#409eff' }">
                   <Edit />
                 </el-icon>
@@ -65,10 +85,30 @@
                <div v-if="data.isModel">
                   <el-icon  class="model-icon" @click="modelClick(data)">
                     <i class="fa-solid fa-square-binary"></i>
-                 </el-icon>
-                 <el-icon v-if="props.userRole=='superuser'" @click="deleteModelConfirm(node, data)" :style="{ color: '#f56c6c' }">
-                  <Delete />
-                </el-icon>
+                  </el-icon>
+                  
+                  <el-popconfirm
+                    title="你确定要删除该数据文件吗"
+                    @confirm="deleteModelConfirm(node, data)"
+                  >
+                    <template #reference>
+                      <el-icon v-if="props.userRole=='superuser'" :style="{ color: '#f56c6c' }">
+                        <Delete />
+                      </el-icon>
+                    </template>
+                    <template #actions="{ confirm, cancel }">
+                      <el-row>
+                        <el-col :span="12">
+                          <el-button size="small" @click="cancel">取消</el-button>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-button type="primary" size="small" @click="confirm">
+                            确定
+                          </el-button>
+                        </el-col>
+                      </el-row>
+                    </template>
+                  </el-popconfirm>
               </div>
             </span>
           </template>

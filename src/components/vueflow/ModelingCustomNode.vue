@@ -5,7 +5,7 @@ import {NodeResizer} from '@vue-flow/node-resizer'
 import {ref, nextTick} from "vue"
 const {updateNodeData, removeNodes, findNode} = useVueFlow()
 
-const props = defineProps(['id', 'data'])
+const props = defineProps(['id', 'data', 'userRole'])
 
 // const actions = ['delete']
 const actions = ['结果', '特征选择结果','相关系数矩阵热力图','连续样本指标变换','不同类型样本占比','原始信号波形图','总结论','详情']
@@ -121,7 +121,7 @@ function delete_button(id){
 
   </NodeToolbar>
   <!-- 删除按钮 -->
-  <button class="delete-button" @click="delete_button(id)">
+  <button class="delete-button" v-if="props.userRole == 'superuser'" @click="delete_button(id)">
     <i class="fa-solid fa-xmark"></i>
   </button>
   <div class="node-content">
