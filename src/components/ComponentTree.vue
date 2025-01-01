@@ -377,6 +377,7 @@ const getComponentTrees = () => {
 // 暴露给父组件的方法
 defineExpose({
   getComponentTrees,
+  fetchModelInfoFromDatabase
 });
 
 // const nameOfNewTree = ref("");

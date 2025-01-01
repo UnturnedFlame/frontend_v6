@@ -228,7 +228,7 @@
                     <my-collapse-item name="1-0" :data="{name:'1-0'}">
                       <template #title>
                         <div style="padding: 10px 0 10px 20px;">
-                          <span class="menu-item-second">数据源</span>
+                          <span style="font-family: 'Microsoft YaHei';font-size: 18px">数据源</span>
                         </div>
                       </template>
                       <template #arrow="{ isActive }">
@@ -607,7 +607,7 @@
                   <DragDropzoneBackground
                       :style="{backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',transition: 'background-color 0.2s ease',}"
                   >
-                    <p v-if="isDragOver">拖入到此</p>
+                    <!-- <p v-if="isDragOver">拖入到此</p> -->
                   </DragDropzoneBackground>
                   <!-- 基础操作栏 -->
                   <Controls @interaction-change="onInteractionChangeOfControls" position="top-left" >
@@ -810,7 +810,7 @@
                                   @click="useDataset(scope.row)"
                                   :loading="loadingData"
                               >
-                                加载
+                                {{ loadingData? '加载中' : '加载' }}
                               </el-button>
                               
                               <el-popconfirm title="你确定要删除该数据文件吗"
@@ -1567,7 +1567,7 @@
         </el-main>
     
         <!-- 以抽屉的形式打开用户历史数据 -->
-        <el-drawer v-model="dataDrawer" direction="ltr" size="45%">
+        <!-- <el-drawer v-model="dataDrawer" direction="ltr" size="45%">
           <div style="display: flex; flex-direction: column">
             <el-col>
               <h2 style="margin-bottom: 25px; color: #253b45">用户数据文件</h2>
@@ -1631,7 +1631,7 @@
 
           </div>
 
-        </el-drawer>
+        </el-drawer> -->
       </el-container>
     </el-container>
 
@@ -1677,7 +1677,6 @@
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               placeholder="请选择适配部位分类"
               allow-clear
-              tree-default-expand-all
               :tree-data="filteredDataSource"
               tree-node-filter-prop="label"
               @select="handleSelectType"
@@ -1850,8 +1849,10 @@ const openDatasetLoadingPanel = () => {
 };
 //////////////////////////////////////////////////////////////////菜单面板--start
 const activeNamesOfMenuPanel = ref(['1'])// 当前展开项
-//点击了那个菜单项
-const onItemClickOfMycollapse = (data) => {
+
+
+//点击菜单项
+const onItemClickOfMycollapse = (data: any) => {
 
 }
 //////////////////////////////////////////////////////////////////菜单面板--end
@@ -2958,9 +2959,9 @@ function checkModelOrder() {
         }
         if (moduleStr.match('无量纲化')) {
           let node
-          for (let item of nodeList.value) {
-            if (item.label.match('无量纲化')) {
-              node = item
+          for (let item of modeling_nodeList.value) {
+            if (item.nodeInfo.label.match('无量纲化')) {
+              node = item.nodeInfo
               break
             }
           }
@@ -5153,9 +5154,9 @@ const checkModel = () => {
         // 无量纲化要检查是否使用模型训练师使用的标准化方法，对输入的原始信号无法使用模型训练时使用的标准化方法进行无量纲化
         if (moduleStr.match('无量纲化')) {
           let node
-          for (let item of nodeList.value) {
-            if (item.label == '无量纲化') {
-              node = item
+          for (let item of modeling_nodeList.value) {
+            if (item.nodeInfo.label == '无量纲化') {
+              node = item.nodeInfo
               break
             }
           }
@@ -5513,9 +5514,9 @@ const checkModel = () => {
         }
         if (moduleStr.match('无量纲化')) {
           let node
-          for (let item of nodeList.value) {
-            if (item.label.match('无量纲化')) {
-              node = item
+          for (let item of modeling_nodeList.value) {
+            if (item.nodeInfo.label.match('无量纲化')) {
+              node = item.nodeInfo
               break
             }
           }
@@ -6332,8 +6333,9 @@ const saveModelConfirm = async (formEl: FormInstance | undefined) => {
             message: '保存模型成功',
             type: 'success'
           })
-          // 刷新模型结构树
+          // 刷新模型结构树以及模型列表
           superComponentTree.value.getComponentTrees()
+          superComponentTree.value.fetchModelInfoFromDatabase()
           getComponentTrees();
 
           modelsDrawer.value = true       // 关闭历史模型抽屉
@@ -8126,9 +8128,6 @@ const deleteDatasetConfirm = (index: any, row: any) => {
 }
 
 
-const loadingData = ref(false)
-
-
 // 用户选择历史数据进行加载
 const useDataset = (row_in: any) => {
   loadingData.value = true
@@ -8334,8 +8333,10 @@ ul > li {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #cbd1ceea;
   font-size: 20px;
+  font-weight: 700;
+  font-family: 'Microsoft YaHei';
   /* 初始颜色，如黄色 */
-  color: white;
+  color: rgb(26, 48, 27);
   z-index: 1000;
   /* 确保它显示在其他元素之上 */
 }
