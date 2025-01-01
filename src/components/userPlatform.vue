@@ -807,10 +807,11 @@
                                   size="small"
                                   type="primary"
                                   style="width: 50px"
-                                  @click="useDataset(scope.row)"
-                                  :loading="loadingData"
+                                  @click="useDataset(scope.row, scope.$index)"
+                                  :loading="loadingRowIndex === scope.$index"
+                                  :disabled="loadingRowIndex !== null && loadingRowIndex !== scope.$index"
                               >
-                                {{ loadingData? '加载中' : '加载' }}
+                                {{ (loadingRowIndex === scope.$index)? '加载中' : '加载' }}
                               </el-button>
                               
                               <el-popconfirm title="你确定要删除该数据文件吗"
@@ -8127,13 +8128,16 @@ const deleteDatasetConfirm = (index: any, row: any) => {
       })
 }
 
+const loadingRowIndex = ref(null); // 用于存储当前正在加载的行的索引
 
 // 用户选择历史数据进行加载
-const useDataset = (row_in: any) => {
-  loadingData.value = true
+const useDataset = (row_in: any, index: any) => {
+  // loadingData.value = true
+  loadingRowIndex.value = index
   setTimeout(() => {
-    loadingData.value = false
+    // loadingData.value = false
     usingDatafile.value = row_in.dataset_name
+    loadingRowIndex.value = null
     ElMessage({
       message: '数据加载成功',
       type: 'success'
