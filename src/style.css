@@ -1,0 +1,193 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+
+.el-header {
+  background-color: #53535e;
+  background-size: cover;
+  color: #dadada;
+  text-align: center;
+  height: 60px;
+  line-height: 60px;
+}
+
+
+/* #4ca1c1 */
+.el-footer {
+  background-color: #1c6e9d;
+  color: white;
+  text-align: center;
+  height: 60px;
+  line-height: 60px;
+}
+
+
+.el-aside {
+  background-color: #D3DCE6;
+  color: #333;
+  text-align: center;
+  /* height: 100vh; */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+.resultsContainer {
+  height: 80%;
+  background-color: white;
+  position: relative;
+  background-image: url('assets/results.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+
+.el-button {
+  font-size: 17px;
+  width: 100%;
+}
+
+
+.dialog-footer button:first-child {
+  margin-right: 10px;
+}
+
+
+.dialog-input {
+  width: 140px;
+}
+
+
+.setting-button {
+  width: 250px;
+  font-size: 17px;
+  margin-left: 100px;
+}
+
+
+.el-dialog {
+  z-index: 2000 !important;
+  /* 使用 !important 确保覆盖其他样式 */
+}
+
+
+/* 自定义文件列表样式 */
+.custom-file-list {
+  position: absolute;
+  left: 90px;
+  /* 按钮宽度减去一些边距 */
+  bottom: 20px;
+  /* 与上传按钮底部对齐 */
+  width: 200px;
+  /* 根据需要调整宽度 */
+
+  background-color: #f9f9f9;
+  /* 根据需要调整背景颜色 */
+  border: 1px solid #dcdfe6;
+  /* padding: 5px; */
+  z-index: 10;
+}
+
+
+.result-image {
+  width: 300px;
+  height: 400px
+}
+
+
+/* 高亮文本：用于已加载模型和已加载数据文本的样式 */
+.highlight {
+  display: inline-block;
+  padding: 5px;
+  border: 2px dashed #6ab15e;
+  background-color: #f9f9f9;
+  font-family: 'Microsoft YaHei';
+  /* color: #1f2224; */
+  position: absolute;
+  width: 165px;
+  bottom: 5px;
+
+  color: green;
+  text-align: center;
+  /* white-space: nowrap; */
+  /* 不换行 */
+  /* overflow: hidden; */
+  /* 隐藏超出部分 */
+  /* text-overflow: ellipsis; */
+  /* 显示为省略号 */
+}
+
+
+.datatype-trigger-icon {
+  display: inline-block;
+  font-size: 21px;
+  color: #faab01;
+  cursor: pointer;
+}
+
+
+/* 鼠标悬停时的颜色变化 */
+.datatype-trigger-icon:hover {
+  color: #5eb313;
+}
+
+
+/* 鼠标点击时的颜色变化 */
+.datatype-trigger-icon:active {
+  color: #1890ff;
+}
+
+
+.algorithms-selection {
+  background-color: #89cdfa;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.dataSourceSetting {
+  width: 250px;
+  height: 180px;
+  display: flex;
+  flex-direction: row;
+}
+
+
+.custom-button {
+  width: 165px;
+  height: 35px;
+  font-size: 16px;
+  /* position: absolute;
+  top: 55px;
+  left: 40px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(to bottom right, #a1a2b1, #edf4f6);
+  color: #3c93f8;
+  border: 2px solid #484a66;
+  font-size: 18px;
+  border-radius: 15px;
+  font-weight: 550;
+}
+
+
+.result-visualization-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px; 
+  font-size: 18px;
+}
+
+.ant-select-dropdown-menu-item-group-list {
+  width: 300px; /* 自定义宽度 */
+}
