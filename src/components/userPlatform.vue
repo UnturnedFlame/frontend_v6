@@ -599,7 +599,7 @@
                   :max-zoom="4"
                   @dragover="onDragOver"
                   @dragleave="onDragLeave"
-                  @node-click="handleNodeClick"
+                  
                   @edges-change="change => handleEdgesChange(change)"
                 >
                   <div id="statusIndicator" class="status-indicator">未建立模型</div>
@@ -2087,7 +2087,7 @@ function getModelingNode(algorithm, node, nodeDataInfo) {
     id: node.id + '-' + nodeDataInfo.use_algorithm,
     type: 'menu',
     // data: {label: nodeDataInfo.label_display, toolbarPosition: Position.Top},
-    data: {label: nodeDataInfo.label_display, toolbarPosition: Position.Top,laglabel: nodeDataInfo.label},
+    data: {label: nodeDataInfo.label_display, toolbarPosition: Position.Top, laglabel: nodeDataInfo.label, use_algorithm: nodeDataInfo.use_algorithm},
     nodeInfo: nodeDataInfo, //这个是自定义的属性，原来vueflow没有
     position: {x: 0, y: 0},
     class: 'light',
@@ -2307,9 +2307,10 @@ function handleNodeClick(Props:any,action:any) {
   showResultSs.value =  action
   console.log('传入的标签',showResultSs.value)
   console.log('传入的标签',Props.data?.laglabel)
-  console.log("传入的值", Props.id.match( /\d+\.\d+|\d+/g)[0])
-  showParameterEdit.value = Props.id.match( /\d+\.\d+|\d+/g)[0]
-  let itemRusult = Props.data.laglabel
+  console.log("传入的值", Props?.id.match( /\d+\.\d+|\d+/g)[0])
+  console.log("传入的id: ", Props?.id)
+  showParameterEdit.value = Props?.id.match( /\d+\.\d+|\d+/g)[0]
+  let itemRusult = Props.data?.laglabel
   showResult(itemRusult)
   //
   // showParameterEdit.value = event.node.nodeInfo.id

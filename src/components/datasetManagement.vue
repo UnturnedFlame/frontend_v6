@@ -15,7 +15,7 @@
     
   </div>
 
-  <el-dialog v-model="datasetManagementDialog" width="1000px" center>
+  <el-dialog v-model="datasetManagementDialog" width="1000px" center top="5vh"> 
     <div style="display: flex; flex-direction: column">
       <h2
         style="margin-bottom: 25px; color: #253b45; text-align: left; font-size: 25px"
@@ -75,7 +75,7 @@
                 >搜索</el-button
               >
             </div>
-            <el-table :data="fetchedDataFiles" height="500" stripe width="100%" border>
+            <el-table :data="fetchedDataFiles" height="500" stripe width="100%" border empty-text="暂无数据">
               <el-table-column
                 property="owner"
                 label="文件上传者"

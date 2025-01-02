@@ -75,9 +75,11 @@ function shouldShowIcon(props, action){
     return true
   }else if(props.data.laglabel == '层次分析模糊综合评估' && (action === '总结论' | action==='详情')) {
     return true
-  }
-  else if(props.data.laglabel == '故障诊断' && (action === '连续样本指标变换' | action==='不同类型样本占比' | action==='原始信号波形图')) {
-    return true
+  }else if(props.data.laglabel == '故障诊断' && (action === '连续样本指标变换' | action==='不同类型样本占比' | action==='原始信号波形图')) {
+    if (props.id.includes('deeplearning') && action === '连续样本指标变换')
+      return false
+    else 
+      return true
   }
 }
 

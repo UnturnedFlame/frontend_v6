@@ -53,7 +53,7 @@
         <p style="font-size: 26px; font-weight: bold">模型管理</p>
       </div>
       <div style="height: 1px; background-color: #d3d3d3; margin: 10px 0"></div>
-      <el-table :data="fetchedModelsInfo" height="500" stripe border style="width: 100%">
+      <el-table :data="fetchedModelsInfo" height="500" stripe border style="width: 100%" empty-text="暂无模型">
         <el-table-column :width="100" property="author" label="模型作者" />
         <el-table-column
           :width="200"
