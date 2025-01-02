@@ -322,7 +322,7 @@
                               <div v-for="algorithm in Object.keys(option.parameters)"
                                    :draggable="true"
                                    style="width: 100%;"
-                                   @dragstart="onDragStart($event,algorithm, option,'handleDragend','default')"
+                                   @dragstart="onDragStart($event, algorithm, option,'handleDragend','default')"
                                    @click="showIntroduction(algorithm.replace(/_multiple/g, ''))"
                               >
                                 <!--                                :bgColor="'#fefefe'"-->
@@ -2118,6 +2118,7 @@ const findIndex = ref(null)
 const parameter_dict = ref({})
 const model_model = reactive([])
 // const dragEnd = ref(false)
+
 //which_init_method: 就是指的那个方法初始化的节点：handleDragend | handleDragendAdd
 function onDragStart(event, algorithms, node, which_init_method, type) {
   let algorithm = algorithms
@@ -2163,7 +2164,14 @@ function onDragStart(event, algorithms, node, which_init_method, type) {
   } else if (which_init_method == "handleDragendAdd") {
     // 使用find方法查找具有特定alias的对象
     const foundObject = fetchedExtraAlgorithmList.value.find(obj => obj.alias === algorithm)
-    const parametersKey = Object.keys(foundObject.parameters)[0]
+    let parametersKey 
+    if (node.label == "故障诊断"){
+      console.log("-----------故障诊断: ", node)
+      parametersKey = node.use_algorithm
+    }else{
+      parametersKey = Object.keys(foundObject.parameters)[0]
+    }
+
     // 如果找到了对象，复制其parameters的键
     if (foundObject) {
       console.log("找到的算法文件", parametersKey); // 输出: ['private_fault_diagnosis_deeplearning', 'private_fault_diagnosis_machine_learning']
@@ -2177,6 +2185,11 @@ function onDragStart(event, algorithms, node, which_init_method, type) {
     }else{
       node.parameters[parametersKey] = node.alias 
     }
+
+    console.log("onDragStart: ", node?.machineLearning)
+    // if (node.label == '故障诊断'){
+    //   if (node.deeplearning)
+    // }
     // 拖拽进来相对于地址栏偏移量
     console.log("add增值", node)
     const evClientX = event.clientX
@@ -2293,7 +2306,7 @@ function onDrop(event) {
 function handleNodeClick(Props:any,action:any) {
   showResultSs.value =  action
   console.log('传入的标签',showResultSs.value)
-  console.log('传入的标签',Props.data.laglabel)
+  console.log('传入的标签',Props.data?.laglabel)
   console.log("传入的值", Props.id.match( /\d+\.\d+|\d+/g)[0])
   showParameterEdit.value = Props.id.match( /\d+\.\d+|\d+/g)[0]
   let itemRusult = Props.data.laglabel
@@ -2562,21 +2575,24 @@ function checkModelOrder() {
     console.log("checkModelOrder module: ", module)
     
     let nodeFound = modeling_nodeList.value.find(item => item.nodeInfo.label == module)
-    if (nodeFound.nodeInfo.use_algorithm.match('machine_learning')){
-      algorithmSchedule.push(nodeFound.nodeInfo.label_display + '机器学习')
-    }else if (nodeFound.nodeInfo.use_algorithm.match('deep_learning')){
-      algorithmSchedule.push(nodeFound.nodeInfo.label_display + '深度学习')
+
+    // 故障诊断类型的组件，要根据深度学习和机器学习区分
+    if (module === '故障诊断'){
+      if (nodeFound.nodeInfo.use_algorithm.match('_machine_learning')){
+        algorithmSchedule.push(nodeFound.nodeInfo.label_display + '%机器学习故障诊断%')
+      }else if (nodeFound.nodeInfo.use_algorithm.match('_deeplearning')){
+        algorithmSchedule.push(nodeFound.nodeInfo.label_display + '%深度学习故障诊断%')
+      }
     }
-    console.log("algorithmsS: ", nodeFound)
     algorithmSchedule.push(nodeFound.nodeInfo.label_display)
-    console.log("checkModelOrder algorithmsS: ", nodeFound)
+    console.log("checkModelOrder nodeFound: ", nodeFound)
     moduleSchedule.push(module)
   }
   
   moduleStr = Object.values(moduleSchedule).join('')   // 所有模块的名称按顺序拼接起来的字符串
   algorithmStr = Object.values(algorithmSchedule).join('')  // 所有模块中的算法名称按顺序拼接起来的字符串
-  console.log('moduleStr', moduleStr)
-  console.log('algorithmStr', algorithmStr)
+  // console.log('moduleStr', moduleStr)
+  // console.log('algorithmStr', algorithmStr)
   // }
   if (modeling_nodeList.value.length) {
     // 首先判断模型中是否有数据源
@@ -2601,7 +2617,7 @@ function checkModelOrder() {
     console.log('algorithmStr: ', algorithmStr)
     // 首先判断模型中是否存在除了数据源之外的1个以上的模块，如果模型中只有一个模块，判断其是否可以独立地运行而不需要其他模块的支持
     if (modeling_nodeList.value.length == 2) {
-      if (canRunSoloModule(moduleStr, algorithmStr)){
+      if (canRunSoloModule(moduleStr, algorithmStr) || algorithmStr.match('%深度学习故障诊断%')){
         // 如果模块可以单独运行，再检查模型中各个模块的参数设置
         let checkParamsRight = checkModelParam()
         let isLofical_completeness = toObject().nodes.length-toObject().edges.length
@@ -2622,11 +2638,11 @@ function checkModelOrder() {
           return false
         }
       }else{
-        // 针对深度学习的新增组件单独处理
+        // 针新增组件单独处理
 
         let tip
-        if (moduleStr.match('故障诊断')) {
-          tip = '模型中包含故障诊断，建议在此之前进行特征提取和特征选择等操作'
+        if (moduleStr.match('故障诊断') && algorithmStr.match('%机器学习故障诊断%')) {
+          tip = '模型中包含机器学习故障诊断，建议在此之前进行特征提取和特征选择等操作'
         } else if (moduleStr.match('层次分析模糊综合评估')) {
           tip = '模型中包含层次分析模糊综合评估，建议在此之前进行特征提取和特征选择等操作'
         } else if (moduleStr.match('特征选择')) {
@@ -2684,7 +2700,8 @@ function checkModelOrder() {
         }
         if (moduleStr.match('故障诊断')) {
           // 如果是深度学习模型的故障诊断
-          if (algorithmStr.match('深度学习模型的故障诊断') || algorithmStr.match('GRU的故障诊断') || algorithmStr.match('LSTM的故障诊断')) {
+          // algorithmStr.match('深度学习模型的故障诊断') || algorithmStr.match('GRU的故障诊断') || algorithmStr.match('LSTM的故障诊断')
+          if (algorithmStr.includes("%深度学习故障诊断%")) {
             if (moduleStr.indexOf('故障诊断') > 0) {
               // 检查深度学习模型的故障诊断之前是否包含不必要的模块
               let preModuleText = moduleStr.substring(0, moduleStr.indexOf('故障诊断'))
@@ -2837,21 +2854,21 @@ function checkModelOrder() {
         }
 
         if (moduleStr.match('特征提取故障诊断')) {
-          let sourceId = labelToId('特征提取')
-          let current = linkedList.search('特征提取')
-          let next = current.next.value
-          let targetId = labelToId(next)
+          // let sourceId = labelToId('特征提取')
+          // let current = linkedList.search('特征提取')
+          // let next = current.next.value
+          // let targetId = labelToId(next)
 
-          let connection = plumbIns.getConnections({source: sourceId, traget: targetId})
-          console.log('connection: ', connection)
+          // let connection = plumbIns.getConnections({source: sourceId, traget: targetId})
+          // console.log('connection: ', connection)
 
-          plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
-            stroke: '#E53935',
-            strokeWidth: 7,
-            outlineStroke: 'transparent',
-            outlineWidth: 5,
+          // plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
+          //   stroke: '#E53935',
+          //   strokeWidth: 7,
+          //   outlineStroke: 'transparent',
+          //   outlineWidth: 5,
 
-          });
+          // });
           ElMessage({
             showClose: true,
             message: '因模型中包含故障诊断，建议在特征提取之后包含特征选择',
@@ -2896,21 +2913,21 @@ function checkModelOrder() {
               message: '因模型中包含层次分析模糊综合评估，建议在此之前包含特征提取',
               type: 'warning'
             })
-            let current = linkedList.searchPre(healthEvaluation) // 寻找健康评估之前的节点，即不符合规则的节点
+            // let current = linkedList.searchPre(healthEvaluation) // 寻找健康评估之前的节点，即不符合规则的节点
 
             // 红色标明报错连线
-            let sourceId = labelToId(current.value)
-            let targetId = labelToId(healthEvaluation)
+            // let sourceId = labelToId(current.value)
+            // let targetId = labelToId(healthEvaluation)
 
-            let connection = plumbIns.getConnections({source: sourceId, traget: targetId})
-            console.log('connection: ', connection)
+            // let connection = plumbIns.getConnections({source: sourceId, traget: targetId})
+            // console.log('connection: ', connection)
 
-            plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
-              stroke: '#E53935',
-              strokeWidth: 7,
-              outlineStroke: 'transparent',
-              outlineWidth: 5,
-            });
+            // plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
+            //   stroke: '#E53935',
+            //   strokeWidth: 7,
+            //   outlineStroke: 'transparent',
+            //   outlineWidth: 5,
+            // });
             return false
           }
           if (moreText(moduleStr, healthEvaluation)) {
@@ -2959,7 +2976,8 @@ function checkModelOrder() {
             return false
           }
         }
-        if (algorithmStr.match('深度学习模型的故障诊断') || algorithmStr.match('GRU的故障诊断') || algorithmStr.match('LSTM的故障诊断')) {
+        // algorithmStr.match('深度学习模型的故障诊断') || algorithmStr.match('GRU的故障诊断') || algorithmStr.match('LSTM的故障诊断')
+        if (algorithmStr.includes('%深度学习故障诊断%')) {
           // 如果使用深度学习的故障诊断之前有其他模块，则要进行限定
 
           if (moduleStr.indexOf('故障诊断') != 0) {
@@ -3103,8 +3121,8 @@ function checkModelOrder() {
           let useDeepLearning = useDeepLearningModule(algorithmStr)
           if (moreText(moduleStr, '故障诊断')) {
             // 机器学习的故障诊断之后只能是进行故障预测或是健康评估
-
-            if (!useDeepLearning && !checkSubstrings(moduleStr, '故障诊断', ['层次分析模糊综合评估', '故障预测', '层次朴素贝叶斯评估', '层次逻辑回归评估', '健康评估'])) {
+            // !useDeepLearning 
+            if (algorithmStr.includes('%机器学习故障诊断%') && !checkSubstrings(moduleStr, '故障诊断', ['层次分析模糊综合评估', '故障预测', '层次朴素贝叶斯评估', '层次逻辑回归评估', '健康评估'])) {
               ElMessage({
                 showClose: true,
                 message: '注意故障诊断之后仅能进行故障预测或是健康评估！',
@@ -3636,6 +3654,7 @@ watch(modeling_nodeList, (newVal, oldVal) => {
     if(item.nodeInfo.id=='1.4'){
       transfer.value['小波变换'] = item.nodeInfo.use_algorithm
       if (item.nodeInfo.use_algorithm.includes('private_') || item.nodeInfo.use_algorithm.includes('extra_')){
+        // 新增小波变换组件不支持参数修改
         displayParamsConfigMenuItem = false
       }
     }
@@ -3852,6 +3871,21 @@ function updateOptionsWithBackendData(data) {
       // newOption.use_algorithm = newOption.parameters[]
       newOption.alias = item.alias;
       newOption.machineLearning = item.machineLearning;
+
+      console.log("updateOptionsWithBackendData item: ", item)
+
+      // console.log("updateOptionsWithBackendData: ", newOption.machineLearning)
+
+      // 对于故障诊断新增组件，根据使用模型类型分别赋值
+      if (item.algorithmType == '故障诊断'){
+        if (item.machineLearning == 'dl'){
+          newOption.use_algorithm = 'private_fault_diagnosis_deeplearning'
+        }else{
+          newOption.use_algorithm = 'private_fault_diagnosis_machine_learning'
+        }
+      }
+
+      console.log("updateOptionsWithBackendData newOption: ", newOption)
 
       // 将新对象添加到 fetchedExtraAlgorithmList 中
       fetchedExtraAlgorithmList.value.push(newOption);
@@ -4498,25 +4532,25 @@ const menuList2 = ref([
     label: '故障检测', id: '2', options: [
       {
         label: '故障诊断', id: '2.1', use_algorithm: null, parameters: {
-          'random_forest': {},
-          'svc': {},
-          'gru': {},
-          'lstm': {},
-          'random_forest_multiple': {},
-          'svc_multiple': {},
-          'gru_multiple': {},
-          'lstm_multiple': {},
-          'ulcnn': {},
-          'ulcnn_multiple': {},
-          'spectrumModel': {},
-          'spectrumModel_multiple': {},
-          'additional_model_one_multiple': {},
-          'additional_model_two_multiple': {},
-          'additional_model_three_multiple': {},
-          'additional_model_four_multiple': {},
-          'additional_model_five': {},
-          'additional_model_six': {},
-          'additional_model_seven': {},
+          'random_forest_machine_learning': {},
+          'svc_machine_learning': {},
+          'gru_deeplearning': {},
+          'lstm_deeplearning': {},
+          'random_forest_multiple_machine_learning': {},
+          'svc_multiple_machine_learning': {},
+          'gru_multiple_deeplearning': {},
+          'lstm_multiple_deeplearning': {},
+          'ulcnn_deeplearning': {},
+          'ulcnn_multiple_deeplearning': {},
+          'spectrumModel_deeplearning': {},
+          'spectrumModel_multiple_deeplearning': {},
+          'additional_model_one_multiple_deeplearning': {},
+          'additional_model_two_multiple_deeplearning': {},
+          'additional_model_three_multiple_deeplearning': {},
+          'additional_model_four_multiple_deeplearning': {},
+          'additional_model_five_deeplearning': {},
+          'additional_model_six_deeplearning': {},
+          'additional_model_seven_deeplearning': {},
           // 'private_fault_diagnosis_deeplearning': '',
         }, tip_show: false, tip: '根据提取特征对输入信号作故障诊断', optional: false
       },
