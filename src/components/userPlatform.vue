@@ -178,15 +178,8 @@
       <!-- 可视化建模主界面 -->
       <el-container style="flex-grow: 1;overflow-y: hidden;">
         <!-- 左侧菜单栏 -->
-        <el-aside width="250"
-                  class="el-aside-demo"
-                  style="background: white;
-                  overflow-y: auto;
-                  overflow-x: hidden;
-                  margin-right: 1px;
-                  box-shadow: 3px 0 3px rgba(0, 0, 0, 0.2);
-                  z-index: 2;
-                  width: 250px;align-items: center;">
+        <el-aside class="el-aside-demo"
+                  :style="{ width: isMenuVisible ? '250px' : '0' }">
           <div style="width: 100%;">
             <!--      标题      -->
             <div class="aside-title"
@@ -581,7 +574,9 @@
             </my-collapse>
           </div>
         </el-aside>
-
+        <div class="sidebar-toggle" @click="toggleMenu" :style="{ left: isMenuVisible ? '250px' : '0' }">
+          <i :class="['fa', isMenuVisible ? 'fa-caret-left' : 'fa-caret-right']"></i>
+        </div>
         <!-- 可视化建模区以及结果可视化区 -->
         <el-main @dragover.prevent ref="efContainerRef" id="efContainer"
                  style="padding: 0;height: 100%;background: white">
@@ -752,7 +747,7 @@
                                     item-background="#ebeef4">
                     <template #title>
                       <div style="padding: 6px;">
-                        <span style="font-size: 18px;">数据源配置</span>
+                        <span class="menu-item-second">数据源配置</span>
                       </div>
                     </template>
                     <template #arrow="{ isActive }">
@@ -856,7 +851,7 @@
                                     item-background="#ebeef4">
                     <template #title>
                       <div style="padding: 6px;">
-                        <span style="font-size: 16px; font-family: 'Microsoft YaHei';">特征提取参数配置</span>
+                        <span clas="menu-item-second">特征提取参数配置</span>
                       </div>
                     </template>
                     <template #arrow="{ isActive }">
@@ -911,7 +906,7 @@
                       item-background="#ebeef4">
                     <template #title>
                       <div style="padding: 6px;">
-                        <span style="font-size: 16px; font-family: 'Microsoft YaHei';">特征选择参数配置</span>
+                        <span class="menu-item-second">特征选择参数配置</span>
                       </div>
                     </template>
                     <template #arrow="{ isActive }">
@@ -1026,7 +1021,7 @@
                       && !containsMenuSettings.includes('1.3')
                       && !containsMenuSettings.includes('1.4')
                       && !containsMenuSettings.includes('1.5')"
-                      style="background-color: white; font-family: 'Microsoft YaHei'; display: flex; flex-direction: column; padding-top: 30px;height: 100%;">
+                      style="background-color: white; font-size: 20px;font-family: 'Microsoft YaHei'; display: flex; flex-direction: column; padding-top: 30px;height: 100%;">
                     暂无可调参数
                   </div>
                 </my-collapse>
@@ -1222,16 +1217,23 @@
 
 
                       <!-- 特征提取可视化 -->
-                      <div v-if="displayFeatureExtraction || generateFeatureExtractionFigure" v-show="displayFeatureExtraction && missionComplete" style="justify-content: center;">
+                      <div v-if="displayFeatureExtraction || generateFeatureExtractionFigure" v-show="displayFeatureExtraction && missionComplete" style="justify-content: center; width: 100%; height: 100%">
                         <el-tabs tab-position="left" type="border-card" v-model="featuresExtractionRawData">
                           <el-tab-pane v-for="item in rawDataList" :key="item.snesor_no" :label="item.sensor_no"
-                                       :name="item.sensor_no">
+                                       :name="item.sensor_no"> 
                             <div :id="item.sensor_no" style="width: 1300px; height: 400px;"></div>
-                            <!-- <div style="padding-left: 10px;text-align: left; font-size: 25px; color:darkgrey;">由原始信号提取特征：</div> -->
-                            <!-- 对应特征提取结果 -->
+                            
                             <div :id="item.sensor_no + 'features'" style="width: 1300px; height: 400px;"></div>
                           </el-tab-pane>
                         </el-tabs>
+                        <!-- <a-tabs tab-position="left" type="border-card" v-model:activeKey="featuresExtractionRawData">
+                          <a-tab-pane v-for="item in rawDataList" :key="item.snesor_no" :tab="item.sensor_no"> 
+                          
+                            <div :id="item.sensor_no" style="width: 1300px; height: 400px;"></div>
+                            
+                            <div :id="item.sensor_no + 'features'" style="width: 1300px; height: 400px;"></div>
+                          </a-tab-pane>
+                        </a-tabs> -->
                       </div>
 
                       <!-- 特征选择可视化 -->
@@ -4067,7 +4069,7 @@ const setIconOfAlgorithms = (label: string) => {
 // 关于如何自定义建模的介绍
 // const showHowToCustomizeModel = ref(true);
 const howToCustomizeModel = "### 如何自定义建模？ \n " +
-    "#### 1. 点击左侧菜单栏中的“基础组件”，在基础组件菜单下，可以选择任意组件拖入建模区, 右键点击建模区中的节点可进行相关参数配置。 \n" +
+    "#### 1. 点击左侧菜单栏中的“基础组件”，在基础组件菜单下，可以选择任意组件拖入建模区, 点击建模区中的配置可进行相关参数配置。 \n" +
     "#### 2. 通过建模区中算法节点的附着点可进行算法模块间的连接 \n" +
     "#### 3. 建立模型时，还需包括数据源组件，将左侧的数据源组件拖入建模区，连接至模型的开始处，并且右键点击数据源组件可以进行数据的上传和加载操作。 \n" +
     "### 推荐的模型流程 \n"
@@ -6566,7 +6568,7 @@ const finalSuggestion = ref('');
 
 // }
 
-const healthEvaluationDisplay = async(results_object: any) => {
+const healthEvaluationDisplay = (results_object: any) => {
 
 // 各个样本健康评估的可视化结果
 // displayHealthEvaluation.value = true
@@ -6684,7 +6686,7 @@ const rawDataList = ref<Object[]>([])
 const featuresSeriesList = ref<Object[]>([])
 const featuresExtractionRawData = ref('传感器 1')
 
-const featureExtractionDisplay = async(resultsObject: any) => {
+const featureExtractionDisplay = (resultsObject: any) => {
 
 
 // 获取后端传回的提取的特征
@@ -6715,6 +6717,7 @@ for (let series of rawDataSeries) {
   })
   sensorNo += 1
 }
+
 sensorNo = 1
 featuresSeriesList.value.length = 0
 for (let features of Object.values(featuresToDrawLineChart)) {
@@ -6867,7 +6870,7 @@ const featuresSelectionTabs = ref('first')
 // }
 
 
-const featuresSelectionDisplay = async(resultsObject: any) => {
+const featuresSelectionDisplay = (resultsObject: any) => {
   // displayFeatureSelection.value = true
 
   let figure1 = resultsObject.figure_Base64
@@ -7107,7 +7110,7 @@ const faultDiagnosisResultOption = ref('2')
 
 const canShowIndicator = ref(false)
 
-const faultDiagnosisDisplay = async(resultsObject: any) => {
+const faultDiagnosisDisplay = (resultsObject: any) => {
   // displayFaultDiagnosis.value = true
 
   let figure1 = resultsObject.figure_Base64
@@ -7308,7 +7311,7 @@ const faultRegressionFigure = ref('')
 
 // }
 
-const faultRegressionDisplay = async(resultsObject: any) => {
+const faultRegressionDisplay = (resultsObject: any) => {
   // displayFaultRegression.value = true
 
   let predictionConclusion: string
@@ -7325,7 +7328,7 @@ const faultRegressionDisplay = async(resultsObject: any) => {
     faultRegression.value = '还未出现故障'
     timeToFault.value = resultsObject.time_to_fault_str
     predictionConclusion = '预测结果：' + resultsObject.prediction_conclusion
-    predictionConclusion += ', ' + '预计故障时间：' + resultsObject.time_to_fault_str
+    predictionConclusion += ', ' + '经算法预测'+ resultsObject.time_to_fault_str + '后该部件可能出现故障' 
   }
 
   resultsToGenerateConclusion['faultPrediction']['text'] = predictionConclusion
@@ -7359,7 +7362,7 @@ const interpolationResultsOfSensors = ref([])   // 插值处理结果中有几�
 //   // displayDenoise.value = true
 // }
 
-const interpolationDisplay = async(resultsObject: any) => {
+const interpolationDisplay = (resultsObject: any) => {
   // displayInterpolation.value = true
 
   let sensorId = 0
@@ -7420,7 +7423,7 @@ const transformDataToFormdata = (features_with_name: any, columns: any, formdata
 
 const normalizationResultType = ref('table')   // 无量纲化的结果类型，table表示表格，figure表示图像
 
-const normalizationDisplay = async(resultsObject: any) => {
+const normalizationDisplay = (resultsObject: any) => {
   // displayNormalization.value = true
 
   let rawData = Object.assign({}, resultsObject.raw_data)
@@ -7485,7 +7488,7 @@ const waveletResultsOfSensors = ref<waveletResults[]>([])  // 存放不同传感
 //   displayDenoise.value = true
 // }
 
-const denoiseDisplay = async(resultsObject: any) => {
+const denoiseDisplay = (resultsObject: any) => {
   // console.log('results_object: ', resultsObject)
   let sensorId = 0
   denoiseFigures.value.length = 0
@@ -7520,6 +7523,22 @@ let resultsToGenerateConclusion = {
   'interpolation': {'imageBase64': "", 'text': ""},
   'normalization': {'imageBase64': "", 'text': ""},
   'wavelet': {'imageBase64': "", 'text': ""},
+}
+
+// 清空生成报告的结果
+const clearGenerateResult = () => {
+  resultsToGenerateConclusion = {
+    'includedModules': [] as string[],
+    'outline': "",
+    'healthEvaluation': {'imageBase64': "", 'text': ""},
+    'featureExtraction': {'imageBase64': "", 'text': ""},
+    'featureSelection': {'imageBase64': "", 'text': ""},
+    'faultDiagnosis': {'imageBase64': "", 'text': ""},
+    'faultPrediction': {'imageBase64': "", 'text': ""},
+    'interpolation': {'imageBase64': "", 'text': ""},
+    'normalization': {'imageBase64': "", 'text': ""},
+    'wavelet': {'imageBase64': "", 'text': ""},
+  }
 }
 
 const selectAllModuleToGenerateResult = ref(false)
@@ -7570,6 +7589,7 @@ let mapping = {
 
 // 生成总结报告pdf
 const generateConclusion = async() => {
+  // clearGenerateResult()
   // 生成所选模块的报告
   if(moduleResultToGenerateList.value.length === 0){
     ElMessage({
@@ -7600,13 +7620,15 @@ const generateConclusion = async() => {
       return
     }
   })
+
+  console.log("generateConclusion resultsToGenerateConclusion: ", resultsToGenerateConclusion)
   var outline = "时间："+ new Date().toLocaleString() + "<br/>" + "数据集："+ usingDatafile.value + "<br/>" + "模型名称："+ modelLoaded.value + "<br/>" + "包含模块："+ contentJson.schedule.join(', ')
   // console.log('resultsToGenerateOutput: ', resultsToGenerateConclusion)
   resultsToGenerateConclusion.outline = outline
   let formData = new FormData()
-  formData.append('resultsToGenerateOutput', JSON.stringify(resultsToGenerateConclusion))
-
-  api.post('user/generate_conclusion/', formData, { responseType: 'blob' }).then((response: any) => {
+  setTimeout(()=>{
+    formData.append('resultsToGenerateOutput', JSON.stringify(resultsToGenerateConclusion))
+    api.post('user/generate_conclusion/', formData, { responseType: 'blob' }).then((response: any) => {
     if (response.status === 200) {
       ElMessage({
         message: '生成总结报告成功',
@@ -7624,6 +7646,8 @@ const generateConclusion = async() => {
   .catch((error: any) => {
     console.log('生成总结报告失败：', error)
   })
+  }, 500)
+  
 }
 
 // const downloadFile = (data: BlobPart, filename: string) => {
@@ -7683,20 +7707,21 @@ const resultsViewClear = () => {
 // 当前显示的算法模块结果
 let currentDisplayedItem = ''
 
-const generateResultsToDisplay = async(moduleName: string, display: boolean) => {
+// 点击显示对应中间结果
+const generateResultsToDisplay = (moduleName: string, display: boolean) => {
   if (moduleName == '层次分析模糊综合评估') {
       let results_to_show = responseResults.层次分析模糊综合评估
       if (currentDisplayedItem != '层次分析模糊综合评估' && display) {
         currentDisplayedItem = '层次分析模糊综合评估'
         displayHealthEvaluation.value = display  // 显示健康评估结果
-        await healthEvaluationDisplay(results_to_show)
+        healthEvaluationDisplay(results_to_show)
       } else {
         if (display && currentDisplayedItem == '层次分析模糊综合评估'){
           displayHealthEvaluation.value = display  // 显示健康评估结果
         }
         if (!display) {
           generateHealthEvaluationFigure.value = true
-          await healthEvaluationDisplay(results_to_show)
+          healthEvaluationDisplay(results_to_show)
         }
       }
     } else if (moduleName == '特征提取') {
@@ -7704,7 +7729,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '特征提取' && display) {
         currentDisplayedItem = '特征提取'
         displayFeatureExtraction.value = display
-        await featureExtractionDisplay(results_to_show)
+        setTimeout(()=>{featureExtractionDisplay(results_to_show)}, 500)
       } else {
         if(display && currentDisplayedItem == '特征提取'){
           displayFeatureExtraction.value = display  // 显示特征提取结果
@@ -7712,7 +7737,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
         if(!display){
           generateFeatureExtractionFigure.value = true
           // displayFeatureExtraction.value = display
-          featureExtractionDisplay(results_to_show)
+          setTimeout(()=>{featureExtractionDisplay(results_to_show)}, 500)
         }
       }
     } else if (moduleName == '特征选择') {
@@ -7720,7 +7745,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '特征选择' && display) {
         currentDisplayedItem = '特征选择'
         displayFeatureSelection.value = display
-        await featuresSelectionDisplay(results_to_show)
+        featuresSelectionDisplay(results_to_show)
       } else {
         if(display && currentDisplayedItem == '特征选择'){
           displayFeatureSelection.value = display  // 显示特征选择结果
@@ -7736,7 +7761,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '故障诊断' && display) {
         currentDisplayedItem = '故障诊断'
         displayFaultDiagnosis.value = display
-        await faultDiagnosisDisplay(results_to_show)
+        faultDiagnosisDisplay(results_to_show)
       } else {
         if(display && currentDisplayedItem == '故障诊断'){
           displayFaultDiagnosis.value = display
@@ -7744,7 +7769,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
         if(!display){
           generateFaultDiagnosisFigure.value = true
           console.log("generateFaultDiagnosisFigure: ", generateFaultDiagnosisFigure.value)
-          await faultDiagnosisDisplay(results_to_show)
+          faultDiagnosisDisplay(results_to_show)
         }
       }
     } else if (moduleName == '故障预测') {
@@ -7752,7 +7777,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '故障预测' && display) {
         currentDisplayedItem = '故障预测'
         displayFaultRegression.value = display
-        await faultRegressionDisplay(results_to_show)
+        faultRegressionDisplay(results_to_show)
       }else{
         if(display && currentDisplayedItem == '故障预测'){
           displayFaultRegression.value = display
@@ -7768,7 +7793,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '插值处理' && display) {
         currentDisplayedItem = '插值处理'
         displayInterpolation.value = display
-        await interpolationDisplay(results_to_show)
+        interpolationDisplay(results_to_show)
       }else{
         if(display && currentDisplayedItem == '插值处理'){
           displayInterpolation.value = display
@@ -7784,7 +7809,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '无量纲化' && display) {
         currentDisplayedItem = '无量纲化'
         displayNormalization.value = display
-        await normalizationDisplay(results_to_show)
+        normalizationDisplay(results_to_show)
       } else {
         if(display && currentDisplayedItem == '无量纲化'){
           displayNormalization.value = display
@@ -7800,7 +7825,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '小波变换' && display) {
         currentDisplayedItem = '小波变换'
         displayDenoise.value = display
-        await denoiseDisplay(results_to_show)
+        denoiseDisplay(results_to_show)
       } else {
         if(display && currentDisplayedItem == '小波变换'){
           displayDenoise.value = display
@@ -7816,7 +7841,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '层次朴素贝叶斯评估' && display) {
         currentDisplayedItem = '层次朴素贝叶斯评估'
         displayHealthEvaluation.value = display
-        await healthEvaluationDisplay(results_to_show)
+        healthEvaluationDisplay(results_to_show)
       } else {
         if(display && currentDisplayedItem == '层次朴素贝叶斯评估'){
           displayHealthEvaluation.value = display
@@ -7834,7 +7859,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '层次逻辑回归评估' && display) {
         currentDisplayedItem = '层次逻辑回归评估'
         displayHealthEvaluation.value = display
-        await healthEvaluationDisplay(results_to_show)
+        healthEvaluationDisplay(results_to_show)
       } else {
         if(display && currentDisplayedItem == '层次逻辑回归评估'){
           displayHealthEvaluation.value = display
@@ -7850,7 +7875,7 @@ const generateResultsToDisplay = async(moduleName: string, display: boolean) => 
       if (currentDisplayedItem != '健康评估' && display) {
         currentDisplayedItem = '健康评估'
         displayHealthEvaluation.value = display
-        await healthEvaluationDisplay(results_to_show)
+        healthEvaluationDisplay(results_to_show)
       } else {
         if(display && currentDisplayedItem == '健康评估'){
           displayHealthEvaluation.value = display
@@ -8314,6 +8339,13 @@ const getColor = (value: string) => {
   } else {
     return 'green'
   }
+}
+
+
+// 控制左侧边栏菜单的收纳
+const isMenuVisible = ref(true)
+const toggleMenu = () => {
+  isMenuVisible.value = !isMenuVisible.value
 }
 </script>
 
@@ -8944,6 +8976,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
   margin-right: 1px;
   box-shadow: 3px 0 3px rgba(0, 0, 0, 0.2);
   z-index: 2;
+  display: flex;
   width: 250px;
   align-items: center;
   font-family: 'Microsoft YaHei', sans-serif; // 添加字体属性
@@ -9074,4 +9107,38 @@ import '@fortawesome/fontawesome-free/css/all.css';
   font-size: 17px
 }
 
+.sidebar-toggle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 250px; /* 当菜单栏显示时，按钮在右侧 */
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: left 0.3s ease;
+}
+
+.sidebar-toggle i {
+  font-size: 20px;
+}
+
+.el-aside {
+  transition: width 0.3s ease;
+}
+
+.el-aside[style*="width: 0px"] + .sidebar-toggle {
+  left: 0px; /* 当菜单栏隐藏时，按钮在左侧 */
+}
+
+
+.el-aside[style*="width: 250px"] + .sidebar-toggle + .main-content {
+  margin-left: 250px; /* 当菜单栏显示时，主体部分向右偏移 */
+}
+
+.el-aside[style*="width: 0px"] + .sidebar-toggle + .main-content {
+  margin-left: 0; /* 当菜单栏隐藏时，主体部分靠左 */
+}
 </style>
