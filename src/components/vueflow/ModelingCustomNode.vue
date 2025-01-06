@@ -15,6 +15,47 @@ const isEditing = ref(false)
 const editedLabel = ref(props.data.label)
 const inputRef = ref(null)
 const emit = defineEmits(['showResults'])
+
+//添加图标
+// 建模区中各个算法节点的图标url
+const setIconOfAlgorithms = (label) => {
+  let iconName;
+  switch (label) {
+    case '插值处理':
+      iconName = 'interpolation-icon.svg'
+      break
+    case '特征提取':
+      iconName = 'extraction-icon.svg'
+      break
+    case '无量纲化':
+      iconName = 'normalization-icon.svg'
+      break
+    case '特征选择':
+      iconName = 'feature-selection-icon.svg'
+      break
+    case '小波变换':
+      iconName = 'wavelet-icon.svg'
+      break
+    case '数据源':
+      iconName = 'data-source-icon.svg'
+      break
+    case '故障诊断':
+      iconName = 'fault-diagnosis-icon.svg'
+      break
+    case '故障预测':
+      iconName = 'fault-prediction-icon.svg'
+      break
+    case '自定义模块':
+      iconName = 'custom-module-icon.svg'
+      break
+    case '层次分析模糊综合评估':
+    case '层次逻辑回归评估':
+    case '层次朴素贝叶斯评估':
+    case '健康评估':
+      iconName = 'health-evaluation-icon.svg'
+  }
+  return new URL(`../../assets/${iconName}`, import.meta.url).href
+}
 // 切换编辑状态
 function toggleEdit(event) {
   isEditing.value = !isEditing.value
@@ -127,6 +168,8 @@ function delete_button(id){
     <i class="fa-solid fa-xmark"></i>
   </button>
   <div class="node-content">
+    <img style="height: 30px;width: 30px;" :src="setIconOfAlgorithms(data.laglabel)"
+         alt="none"/>
     <span class="node-label" v-if="!isEditing">{{ data.label }}</span>
   </div>
 

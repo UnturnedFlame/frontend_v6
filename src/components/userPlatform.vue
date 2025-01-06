@@ -30,23 +30,23 @@
               username === '用户名未设置' ? '用户名未设置' : ('欢迎' + username + '！')
             }}</span>
 
-          <!-- 帮助 -->
-          <div class="clickable action-item">
-            <el-dropdown :trigger="['click']" class="clickable" placement="bottom-end">
-              <div style="display: flex; align-items: center; justify-content: center;">
-                <i style="margin: 5px;" class="fa-regular fa-circle-question action-icon"></i>
-                <a @click.prevent>
-                  <span class="action-text" style="white-space: nowrap;overflow: hidden;">帮助</span>
-                </a>
-              </div>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item @click="operationHelpDialogVisible=true">操作指南</el-dropdown-item>
-                  <el-dropdown-item @click="userHelpDialogVisible=true">使用教程</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
+<!--          &lt;!&ndash; 帮助 &ndash;&gt;-->
+<!--          <div class="clickable action-item">-->
+<!--            <el-dropdown :trigger="['click']" class="clickable" placement="bottom-end">-->
+<!--              <div style="display: flex; align-items: center; justify-content: center;">-->
+<!--                <i style="margin: 5px;" class="fa-regular fa-circle-question action-icon"></i>-->
+<!--                <a @click.prevent>-->
+<!--                  <span class="action-text" style="white-space: nowrap;overflow: hidden;">帮助</span>-->
+<!--                </a>-->
+<!--              </div>-->
+<!--              <template #dropdown>-->
+<!--                <el-dropdown-menu>-->
+<!--                  <el-dropdown-item @click="operationHelpDialogVisible=true">操作指南</el-dropdown-item>-->
+<!--                  <el-dropdown-item @click="userHelpDialogVisible=true">使用教程</el-dropdown-item>-->
+<!--                </el-dropdown-menu>-->
+<!--              </template>-->
+<!--            </el-dropdown>-->
+<!--          </div>-->
 
           <!-- 退出 -->
           <div @click="logout" class="clickable action-item">
@@ -611,9 +611,9 @@
                       <Icon name="reset"/>
                     </ControlButton>
 
-                    <ControlButton title="打乱" @click="modeling_updatePos">
-                      <Icon name="update"/>
-                    </ControlButton>
+<!--                    <ControlButton title="打乱" @click="modeling_updatePos">-->
+<!--                      <Icon name="update"/>-->
+<!--                    </ControlButton>-->
 
                     <ControlButton title="背景" @click="modeling_toggleDarkMode">
                       <Icon v-if="dark" name="sun"/>
@@ -628,17 +628,17 @@
                       <i :style="dark ? 'color: #ffffff' : 'color: #000000'" class="fa-solid fa-arrows-left-right"></i>
                     </ControlButton>
 
-                    <ControlButton title="打印边、节点数据（object）" @click="modeling_test_logToObject">
-                      <Icon name="log"/>
-                    </ControlButton>
+<!--                    <ControlButton title="打印边、节点数据（object）" @click="modeling_test_logToObject">-->
+<!--                      <Icon name="log"/>-->
+<!--                    </ControlButton>-->
 
-                    <ControlButton title="测试保存模型到localStorage" @click="modeling_test_onSave">
-                      <Icon name="log"/>
-                    </ControlButton>
+<!--                    <ControlButton title="测试保存模型到localStorage" @click="modeling_test_onSave">-->
+<!--                      <Icon name="log"/>-->
+<!--                    </ControlButton>-->
 
-                    <ControlButton title="测试恢复模型从localStorage" @click="modeling_test_onRestore">
-                      <Icon name="log"/>
-                    </ControlButton>
+<!--                    <ControlButton title="测试恢复模型从localStorage" @click="modeling_test_onRestore">-->
+<!--                      <Icon name="log"/>-->
+<!--                    </ControlButton>-->
                   </Controls>
                   <!-- 功能操作栏 -->
                   <Controls position="top-right" :show-zoom="false" :show-fit-view="false" :show-interactive="false"
