@@ -801,6 +801,51 @@ let contentJsonForFaultDiagnosisML = {
   mutipleSensor: false,
 };
 
+// 校验故障预测新增服务组件
+let contentJsonForFaultPrediction = {
+  modules: ["故障诊断", "特征提取", "特征选择"],
+  algorithms: {
+    特征提取: "time_frequency_domain_features",
+    特征选择: "correlation_coefficient_importance",
+    故障诊断: "random_forest_machine_learning",
+    故障预测: "private_fault_prediction",
+  },
+  parameters: {
+    time_frequency_domain_features: {
+      均值: true,
+      方差: true,
+      标准差: true,
+      峰度: true,
+      偏度: true,
+      四阶累积量: true,
+      六阶累积量: true,
+      最大值: true,
+      最小值: true,
+      中位数: true,
+      峰峰值: true,
+      整流平均值: true,
+      均方根: true,
+      方根幅值: true,
+      波形因子: true,
+      峰值因子: true,
+      脉冲因子: true,
+      裕度因子: true,
+      重心频率: true,
+      均方频率: true,
+      均方根频率: true,
+      频率方差: true,
+      频率标准差: true,
+      谱峭度的均值: true,
+      谱峭度的峰度: true,
+    },
+    correlation_coefficient_importance: {'rule': 1, 'threshold1': 0.25, 'threshold2': 0.1},
+    random_forest_machine_learning: {},
+    private_fault_prediction: '',
+  },
+  schedule: ["数据源", "特征提取", "特征选择", "故障诊断", "故障预测"],
+  mutipleSensor: false,
+};
+
 // 校验健康评估增值服务组件
 let contentJsonForHealthEvaluation = {
   modules: ["特征提取", "健康评估"],
@@ -878,6 +923,7 @@ const startValidating = () => {
     case "健康评估":
       data.append("validationExample", "example_for_fault_diagnosis_validation");
       break;
+    case "故障预测":
     case "故障诊断":
       if (uploadAlgorithmForm.faultDiagnosisType === "machineLearning") {
         data.append("validationExample", "example_for_fault_diagnosis_validation");
@@ -982,7 +1028,8 @@ const canDisplayInterpolationValidationResult = ref(false)  // 插值处理组�
 const canDisplayWaveletTransformValidationResult = ref(false)  // 小波变换组件校验结果
 const canDisplayDimensionlessValidationResult = ref(false)  // 无量纲化组件校验结果
 const canDisplayFaultDiagnosisValidationResult = ref(false)  // 故障诊断组件校验结果
-const canDisplayHealthEvaluationValidationResult = ref(false)
+const canDisplayHealthEvaluationValidationResult = ref(false)  // 健康评估组件校验结果
+const canDisplayFaultPredictionValidationResult = ref(false)  // 故障预测组件校验结果
 
 const resetDisplay = () => {
   canDisplayInterpolationValidationResult.value = false
@@ -990,6 +1037,7 @@ const resetDisplay = () => {
   canDisplayDimensionlessValidationResult.value = false
   canDisplayFaultDiagnosisValidationResult.value = false
   canDisplayHealthEvaluationValidationResult.value = false
+  canDisplayFaultPredictionValidationResult.value = false
 }
 
 // 关闭组件校验结果
@@ -1002,6 +1050,7 @@ const waveletTransformFigures = ref<string[]>([])  // 小波变换组件校验�
 const dimensionlessFigures = ref<string[]>([])  // 无量纲化组件校验结果
 const faultDiagnosisFigures = ref<string[]>([])  // 故障诊断组件校验结果
 const healthEvaluationFigures = ref<string[]>([])  // 健康评估组件校验结果
+const faultPredictionFigures = ref<string[]>([])  // 故障预测组件校验结果
 // const interpolationResultsOfSensors = ref([])
 interface ResultsObject {  // 完整性校验结果
   插值处理: Object
@@ -1041,12 +1090,18 @@ const displayValidationResult = (algorithmType: string, resultsObject: ResultsOb
     let healthEvaluationValidationResult: string = resultsObject.健康评估.he_validation_result
     healthEvaluationFigures.value.push('data:image/png;base64,' + healthEvaluationValidationResult)
   }
-
   else if (algorithmType == "小波变换"){
     canDisplayWaveletTransformValidationResult.value = true
     // interpolationFigures.value.push('data:image/png;base64,' + resultsObject.小波变换)
     for(const [key, value] of Object.entries(resultsObject.小波变换)){
       waveletTransformFigures.value.push('data:image/png;base64,' + value)
+    }
+  }
+  else if (algorithmType == "故障预测"){
+    canDisplayFaultPredictionValidationResult.value = true
+    // interpolationFigures.value.push('data:image/png;base64,' + resultsObject.小波变换)
+    for(const [key, value] of Object.entries(resultsObject.故障预测)){
+      faultPredictionFigures.value.push('data:image/png;base64,' + value)
     }
   }
 
@@ -1096,6 +1151,9 @@ const extraModuleUploadAndValidate = async () => {
   } else if (uploadAlgorithmForm.algorithmType == '健康评估'){
     contentJsonForHealthEvaluation.parameters['private_health_evaluation'] = algorithmName;
     Object.assign(contentJson, contentJsonForHealthEvaluation)
+  } else if(uploadAlgorithmForm.algorithmType == '故障预测'){
+    contentJsonForFaultPrediction.parameters['private_fault_prediction'] = algorithmName;
+    Object.assign(contentJson, contentJsonForFaultPrediction)
   } else {
     // message.error("上传增值服务组件失败，请检查算法类型是否正确");
     return;

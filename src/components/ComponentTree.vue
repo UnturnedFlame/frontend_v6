@@ -57,7 +57,7 @@
                 </el-icon>
                 
                 <el-popconfirm
-                  title="你确定要删除该数据文件吗"
+                  title="是否确定删除该节点？"
                   @confirm="removeNodeOfTree(node, data)"
                 >
                   <template #reference>
@@ -88,7 +88,7 @@
                   </el-icon>
                   
                   <el-popconfirm
-                    title="你确定要删除该数据文件吗"
+                    title="是否确定删除该模型？"
                     @confirm="deleteModelConfirm(node, data)"
                   >
                     <template #reference>

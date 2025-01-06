@@ -25,6 +25,7 @@
         <!-- 中间的标题 -->
         <div class="title">
           <h1>轨道车辆智能运维通用算法和工具软件</h1>
+          <!-- <h1>多源数据采集与数据分析软件</h1> -->
         </div>
 
         <!-- 右侧的用户操作区 -->
@@ -357,7 +358,7 @@
                     <my-collapse-item name="1-0-0" :data="{name:'1-0-0'}">
                       <template #title>
                         <div style="padding: 10px 0 10px 20px;">
-                          <span style="font-size: 18px;">增值组件</span>
+                          <span style="font-size: 18px;">新增组件</span>
                         </div>
                       </template>
                       <template #arrow="{ isActive }">
@@ -8234,7 +8235,7 @@ const statusMessageToShow = ref('')
 const statusMessage = {
   'success': '## 程序已经运行完毕，请点击相应的算法模块查看对应结果！',
   'shutdown': '## 程序运行终止，点击清空模型重新建立模型',
-  'error': '## 程序运行出错，请检查模型是否正确，或者检查加载的数据是否规范，点击清空模型重新建立模型',
+  'error': '## 程序运行出错，请检查模型是否正确，或者检查加载的数据是否规范',
 }
 
 
