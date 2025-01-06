@@ -168,7 +168,7 @@ function delete_button(id){
     <i class="fa-solid fa-xmark"></i>
   </button>
   <div class="node-content">
-    <img style="height: 20px;width: 20px;" :src="setIconOfAlgorithms(data.laglabel)"
+    <img style="height: 30px;width: 30px;" :src="setIconOfAlgorithms(data.laglabel)"
          alt="none"/>
     <span class="node-label" v-if="!isEditing">{{ data.label }}</span>
   </div>
