@@ -2,6 +2,11 @@
 //vue flow 建模区域start
 @import "vueflow/main.css";
 //vue flow 建模区域end
+.vue-flow__controls-button {
+  height: 40px;
+  width: 71px;
+  padding: 0;
+}
 </style>
 <template>
   <!--
@@ -179,6 +184,8 @@
       <el-container style="flex-grow: 1;overflow-y: hidden;">
         <!-- 左侧菜单栏 -->
         <el-aside class="el-aside-demo"
+                  @mouseenter="isMouseOverSidebar = true; updateButtonVisibility()"
+                  @mouseleave="isMouseOverSidebar = false; updateButtonVisibility()"
                   :style="{ width: isMenuVisible ? '250px' : '0' }">
           <div style="width: 100%;">
             <!--      标题      -->
@@ -574,8 +581,11 @@
             </my-collapse>
           </div>
         </el-aside>
-        <div class="sidebar-toggle" @click="toggleMenu" :style="{ left: isMenuVisible ? '250px' : '0' }">
-          <i :class="['fa', isMenuVisible ? 'fa-caret-left' : 'fa-caret-right']"></i>
+        <div @mouseenter="isMouseOverButton = true; updateButtonVisibility()"
+             @mouseleave="isMouseOverButton = false; updateButtonVisibility()"
+             v-show="isShowButtonOfSidebar" class="sidebar-toggle" @click="toggleMenu"
+             :style="{ left: isMenuVisible ? '250px' : '0' }">
+          <i :class="['fa-solid', isMenuVisible ? 'fa-angle-left' : 'fa-angle-right']"></i>
         </div>
         <!-- 可视化建模区以及结果可视化区 -->
         <el-main @dragover.prevent ref="efContainerRef" id="efContainer"
@@ -594,7 +604,6 @@
                   :max-zoom="4"
                   @dragover="onDragOver"
                   @dragleave="onDragLeave"
-                  
                   @edges-change="change => handleEdgesChange(change)"
                 >
                   <div id="statusIndicator" class="status-indicator">未建立模型</div>
@@ -604,53 +613,142 @@
                   >
                     <!-- <p v-if="isDragOver">拖入到此</p> -->
                   </DragDropzoneBackground>
-                  <!-- 基础操作栏 -->
-                  <Controls @interaction-change="onInteractionChangeOfControls" position="top-left" >
-                    <ControlButton title="重置" @click="modeling_resetTransform" class="menu-item-second"> 
-                      <Icon name="reset"/>
+                  <!-- 操作栏 -->
+                  <Controls style="height: 40px;" @interaction-change="onInteractionChangeOfControls"
+                            position="top-left">
+                    <!-- 放大按钮样式 -->
+                    <template #icon-zoom-in>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="放大地图">
+                        <i class="fa-solid fa-plus" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">放大</span>
+                      </div>
+                    </template>
+                    <!-- 缩小按钮样式 -->
+                    <template #icon-zoom-out>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="缩小地图">
+                        <i class="fa-solid fa-minus" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">缩小</span>
+                      </div>
+                    </template>
+                    <!-- 自适应按钮样式 -->
+                    <template #icon-fit-view>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="自适应模型">
+                        <i class="fa-solid fa-expand" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">自动</span>
+                      </div>
+                    </template>
+                    <!-- 锁定（lock）按钮样式 -->
+                    <template #icon-lock>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="解锁地图">
+                        <i class="fa-solid fa-lock" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">解锁</span>
+                      </div>
+                    </template>
+                    <!-- 锁定（unlock）按钮样式 -->
+                    <template #icon-unlock>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="锁定地图">
+                        <i class="fa-solid fa-lock-open" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">锁定</span>
+                      </div>
+                    </template>
+                    <ControlButton title="重置" @click="modeling_resetTransform">
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="恢复地图初始位置">
+                        <i class="fa-solid fa-rotate-left" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">重置</span>
+                      </div>
                     </ControlButton>
-
-<!--                    <ControlButton title="打乱" @click="modeling_updatePos">-->
-<!--                      <Icon name="update"/>-->
-<!--                    </ControlButton>-->
-
+                    <!--                    <ControlButton title="打乱" @click="modeling_updatePos">-->
+                    <!--                      <Icon name="update"/>-->
+                    <!--                    </ControlButton>-->
                     <ControlButton title="背景" @click="modeling_toggleDarkMode">
-                      <Icon v-if="dark" name="sun"/>
-                      <Icon v-else name="moon"/>
+                      <div v-if="dark"
+                           style="height: 100%;width: 100%;"
+                           class="control-operator-btn-default-css"
+                           :style="{color: dark ? '#ffffff' : '#000000'}"
+                           title="明亮主题">
+                        <i class="fa-regular fa-sun" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">明亮</span>
+                      </div>
+                      <div v-else
+                           style="height: 100%;width: 100%;"
+                           class="control-operator-btn-default-css"
+                           :style="{color: dark ? '#ffffff' : '#000000'}"
+                           title="暗黑主题">
+                        <i class="fa-regular fa-moon" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">暗黑</span>
+                      </div>
                     </ControlButton>
-
                     <ControlButton title="垂直布局" @click="layoutGraph('LR')">
-                      <i :style="dark ? 'color: #ffffff' : 'color: #000000'" class="fa-solid fa-arrows-up-down"></i>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="垂直布局">
+                        <i :style="dark ? 'color: #ffffff;margin-right: 5px' : 'color: #000000;margin-right: 5px'" class="fa-solid fa-arrows-up-down"></i>
+                        <span class="menu-item-second">垂直</span>
+                      </div>
                     </ControlButton>
-
                     <ControlButton title="水平布局" @click="layoutGraph('TB')">
-                      <i :style="dark ? 'color: #ffffff' : 'color: #000000'" class="fa-solid fa-arrows-left-right"></i>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="水平布局">
+                        <i :style="dark ? 'color: #ffffff;margin-right: 5px' : 'color: #000000;margin-right: 5px'"
+                           class="fa-solid fa-arrows-left-right"></i>
+                        <span class="menu-item-second">水平</span>
+                      </div>
                     </ControlButton>
 
-<!--                    <ControlButton title="打印边、节点数据（object）" @click="modeling_test_logToObject">-->
-<!--                      <Icon name="log"/>-->
-<!--                    </ControlButton>-->
+                    <!--                    <ControlButton title="打印边、节点数据（object）" @click="modeling_test_logToObject">-->
+                    <!--                      <Icon name="log"/>-->
+                    <!--                    </ControlButton>-->
 
-<!--                    <ControlButton title="测试保存模型到localStorage" @click="modeling_test_onSave">-->
-<!--                      <Icon name="log"/>-->
-<!--                    </ControlButton>-->
+                    <!--                    <ControlButton title="测试保存模型到localStorage" @click="modeling_test_onSave">-->
+                    <!--                      <Icon name="log"/>-->
+                    <!--                    </ControlButton>-->
 
-<!--                    <ControlButton title="测试恢复模型从localStorage" @click="modeling_test_onRestore">-->
-<!--                      <Icon name="log"/>-->
-<!--                    </ControlButton>-->
-                  </Controls>
-                  <!-- 功能操作栏 -->
-                  <Controls position="top-right" :show-zoom="false" :show-fit-view="false" :show-interactive="false"
-                            class="menu-item-second"
-                            style="display: flex;flex-direction: row;right: 300px;">
+                    <!--                    <ControlButton title="测试恢复模型从localStorage" @click="modeling_test_onRestore">-->
+                    <!--                      <Icon name="log"/>-->
+                    <!--                    </ControlButton>-->
                     <ControlButton
                         @click="outputConfig"
                         class="control-operator-btn-default-css"
                         :disabled="disabledStateOfControlBtn.clearModelOfViewFlowBtn"
                         :style="{color: dark ? '#ffffff' : '#000000'}"
                         title="下载报告">
-                              <i class="fa-solid fa-download"></i>
-                      <span class="menu-item-second" >报告</span>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="下载报告">
+                        <i class="fa-solid fa-download" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">报告</span>
+                      </div>
                     </ControlButton>
                     <ControlButton
                         @click="clearModelOfViewFlow"
@@ -658,8 +756,14 @@
                         :disabled="disabledStateOfControlBtn.clearModelOfViewFlowBtn"
                         :style="{color: dark ? '#ffffff' : '#000000'}"
                         title="清空模型">
-                      <i class="fa-solid fa-broom"></i>
-                      <span class="menu-item-second" >清空</span>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="清空模型">
+                        <i class="fa-solid fa-broom" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">清空</span>
+                      </div>
                     </ControlButton>
                     <ControlButton
                         v-if="userRole === 'superuser'"
@@ -668,8 +772,14 @@
                         :disabled="disabledStateOfControlBtn.checkModelOfViewFlowBtn"
                         :style="{color: dark ? '#ffffff' : '#000000'}"
                         title="检查模型">
-                      <i class="fa-solid fa-magnifying-glass"></i>
-                      <span class="menu-item-second" >检查</span>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="检查模型">
+                        <i class="fa-solid fa-magnifying-glass" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">检查</span>
+                      </div>
                     </ControlButton>
                     <ControlButton
                         v-if="userRole === 'superuser'"
@@ -678,8 +788,14 @@
                         :disabled="disabledStateOfControlBtn.saveModelOfViewFlowBtn"
                         :style="{color: dark ? '#ffffff' : '#000000'}"
                         title="保存模型">
-                      <i class="fa-solid fa-floppy-disk"></i>
-                      <span class="menu-item-second" >保存</span>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="保存模型">
+                        <i class="fa-solid fa-floppy-disk" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">保存</span>
+                      </div>
                     </ControlButton>
                     <ControlButton
                         @click="runModelOfViewFlow"
@@ -687,8 +803,14 @@
                         :disabled="disabledStateOfControlBtn.runModelOfViewFlowBtn"
                         :style="{color: dark ? '#ffffff' : '#000000'}"
                         title="运行模型">
-                      <i class="fa-solid fa-power-off"></i>
-                      <span class="menu-item-second" >运行</span>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="运行模型">
+                        <i class="fa-solid fa-power-off" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">运行</span>
+                      </div>
                     </ControlButton>
                     <ControlButton
                         @click="openConfigPanelOfModelNode"
@@ -696,8 +818,14 @@
                         :disabled="disabledStateOfControlBtn.configPanelOfModelNodeBtn"
                         :style="{color: dark ? '#ffffff' : '#000000'}"
                         title="模型配置">
-                      <i class="fa-solid fa-gear"></i>
-                      <span class="menu-item-second" >配置</span>
+                      <div
+                          style="height: 100%;width: 100%;"
+                          class="control-operator-btn-default-css"
+                          :style="{color: dark ? '#ffffff' : '#000000'}"
+                          title="模型配置">
+                        <i class="fa-solid fa-gear" style="margin-right: 5px;"></i>
+                        <span class="menu-item-second">配置</span>
+                      </div>
                     </ControlButton>
                   </Controls>
                   <!-- 自定义节点 -->
@@ -1021,7 +1149,7 @@
                       && !containsMenuSettings.includes('1.3')
                       && !containsMenuSettings.includes('1.4')
                       && !containsMenuSettings.includes('1.5')"
-                      style="background-color: white; font-size: 20px;font-family: 'Microsoft YaHei'; display: flex; flex-direction: column; padding-top: 30px;height: 100%;">
+                      style="background-color: white; font-size: 17px;font-family: 'Microsoft YaHei'; display: flex; flex-direction: column; padding-top: 30px;height: 100%;">
                     暂无可调参数
                   </div>
                 </my-collapse>
@@ -8347,6 +8475,18 @@ const isMenuVisible = ref(true)
 const toggleMenu = () => {
   isMenuVisible.value = !isMenuVisible.value
 }
+const isShowButtonOfSidebar = ref(false) //按钮显示状态
+const isMouseOverSidebar = ref(false); // 鼠标是否在侧边栏
+const isMouseOverButton = ref(false); // 鼠标是否在按钮
+
+// 更新按钮显示状态
+const updateButtonVisibility = () => {
+  if (!isMenuVisible.value) {
+    isShowButtonOfSidebar.value = true;
+  } else {
+    isShowButtonOfSidebar.value = isMouseOverSidebar.value || isMouseOverButton.value;
+  }
+};
 </script>
 
 <style>
@@ -8476,14 +8616,15 @@ ul > li {
 .status-indicator {
   position: absolute;
   top: 8%;
-  left: 2%;
+  left: 15px;
   padding: 5px 10px;
-  border-radius: 5px;
+  /*border-radius: 5px;*/
+  border-radius: 2px;
   border: solid 1px rgba(0, 0, 0, 0.2);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #cbd1ceea;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 17px;
+  /*font-weight: 700;*/
   font-family: 'Microsoft YaHei';
   /* 初始颜色，如黄色 */
   color: rgb(26, 48, 27);
@@ -9114,15 +9255,17 @@ import '@fortawesome/fontawesome-free/css/all.css';
   left: 250px; /* 当菜单栏显示时，按钮在右侧 */
   background-color: #fff;
   border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
+  border-left: 0 solid #ccc;
+  padding: 8px;
+  border-radius: 0 10% 10% 0;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 2;
   transition: left 0.3s ease;
+  box-shadow: 3px 0 3px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-toggle i {
-  font-size: 20px;
+  //font-size: 20px;
 }
 
 .el-aside {

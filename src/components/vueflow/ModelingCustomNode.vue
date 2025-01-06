@@ -139,38 +139,66 @@ function delete_button(id){
   <NodeResizer :is-visible="true" min-width="100" min-height="30" :color="'#ccd0d6'"
                :handle-style="{width: 0, height: 0,background: '#ccd0d6'}"/>
 
-  <NodeToolbar :is-visible="data.toolbarVisible" :position="data.toolbarPosition">
-    <el-tooltip
-        v-for="action in actions"
-        :key="action"
-        class="box-item"
-        effect="dark"
-        :content="action"
-    placement="top-start"
-    >
-    <template #content>
-      {{ action }}
-    </template>
-    <button
-        v-if="shouldShowIcon(props, action)"
-        type="button"
-        :class="{ selected: action === data.action }"
-        @click="updateNodeDataByAction(props.id, action, props)"
-    >
-      <i v-if="shouldShowIcon(props, action)" :class="getIconClassByAction(action)"></i>
+<!--  <NodeToolbar :is-visible="data.toolbarVisible" :position="data.toolbarPosition">-->
+<!--    <el-tooltip-->
+<!--        v-for="action in actions"-->
+<!--        :key="action"-->
+<!--        class="box-item"-->
+<!--        effect="dark"-->
+<!--        :content="action"-->
+<!--    placement="top-start"-->
+<!--    >-->
+<!--    <template #content>-->
+<!--      {{ action }}-->
+<!--    </template>-->
+<!--    <button-->
+<!--        v-if="shouldShowIcon(props, action)"-->
+<!--        type="button"-->
+<!--        :class="{ selected: action === data.action }"-->
+<!--        @click="updateNodeDataByAction(props.id, action, props)"-->
+<!--    >-->
+<!--      <i v-if="shouldShowIcon(props, action)" :class="getIconClassByAction(action)"></i>-->
 
-    </button>
-    </el-tooltip>
+<!--    </button>-->
+<!--    </el-tooltip>-->
 
-  </NodeToolbar>
+<!--  </NodeToolbar>-->
   <!-- 删除按钮 -->
   <button class="delete-button" v-if="props.userRole == 'superuser'" @click="delete_button(id)">
     <i class="fa-solid fa-xmark"></i>
   </button>
   <div class="node-content">
-    <img style="height: 30px;width: 30px;" :src="setIconOfAlgorithms(data.laglabel)"
-         alt="none"/>
-    <span class="node-label" v-if="!isEditing">{{ data.label }}</span>
+    <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;width: 100%;">
+      <img style="height: 30px;width: 30px;" :src="setIconOfAlgorithms(data.laglabel)"
+           alt="none"/>
+      <span class="node-label" v-if="!isEditing">{{ data.label }}</span>
+    </div>
+    <div style="width: 100%;justify-content: right;align-items: center;display: flex;margin-right: 8px;padding: 0;">
+      <div
+          v-for="action in actions"
+          :key="action"
+      >
+        <el-tooltip
+            class="box-item"
+            effect="dark"
+            :content="action"
+            placement="top-start"
+        >
+          <template #content>
+            {{ action }}
+          </template>
+          <button
+              v-if="shouldShowIcon(props, action)"
+              type="button"
+              :class="{ selected: action === data.action }"
+              @click="updateNodeDataByAction(props.id, action, props)"
+              style="border: 0;padding: 0;background: white;margin: 5px;"
+          >
+            <i style="font-size: 30px;" v-if="shouldShowIcon(props, action)" :class="getIconClassByAction(action)"></i>
+          </button>
+        </el-tooltip>
+      </div>
+    </div>
   </div>
 
   <Handle id="source-a" type="source" :position="Position.Right"/>
@@ -182,12 +210,15 @@ function delete_button(id){
 <style scoped>
 .delete-button{
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 3px;
+  right: 3px;
+  background: #ffffff;
+  border: 0;
 }
 .node-content {
   font-family: 'JetBrains Mono', monospace;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 8px;
