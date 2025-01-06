@@ -351,7 +351,7 @@
                     <my-collapse-item name="1-0-0" :data="{name:'1-0-0'}">
                       <template #title>
                         <div style="padding: 10px 0 10px 20px;">
-                          <span style="font-size: 18px;">增值组件</span>
+                          <span style="font-size: 18px;">新增组件</span>
                         </div>
                       </template>
                       <template #arrow="{ isActive }">

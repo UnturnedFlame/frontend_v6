@@ -3,6 +3,7 @@ import {Handle, Position, useVueFlow} from '@vue-flow/core'
 import {NodeToolbar} from '@vue-flow/node-toolbar'
 import {NodeResizer} from '@vue-flow/node-resizer'
 import {ref, nextTick} from "vue"
+import { String } from 'lodash'
 const {updateNodeData, removeNodes, findNode} = useVueFlow()
 
 const props = defineProps(['id', 'data', 'userRole'])
@@ -88,15 +89,30 @@ function saveEdit() {
 }
 
 function getIconClassByAction(action) {
+
+  let iconName;
   if (action === '结果')
-    return `fa-solid fa-square-poll-vertical`
-  if (action === '特征选择结果')
-    return 'fa-solid fa-square-poll-vertical'
-  if (action === '相关系数矩阵热力图')
-    return 'fa-solid fa-magnet'
-  if (action){
+    iconName = 'analysis-result-icon.svg'
+    // return 'fa-solid fa-square-poll-vertical'
+  else if (action === '特征选择结果')
+    iconName = 'features-selection-result-icon.svg'
+  else if (action === '相关系数矩阵热力图')
+    iconName = 'heatmap-icon.svg'
+  else if (action === '连续样本指标变换')
+    iconName = 'indicators-trend-icon.svg'
+  else if (action === '不同类型样本占比')
+    iconName = 'pie-chart-icon.svg'
+  else if (action === '原始信号波形图')
+    iconName = 'waveform-icon.svg'
+  else if (action === '总结论')
+    iconName = 'summary-icon.svg'
+  else if (action === '详情')
+    iconName = 'details-icon.svg'
+  else if(action){
     return 'fa-solid fa-magnet'
   }
+
+  return new URL(`../../assets/${iconName}`, import.meta.url).href
 
 }
 
@@ -157,7 +173,9 @@ function delete_button(id){
         :class="{ selected: action === data.action }"
         @click="updateNodeDataByAction(props.id, action, props)"
     >
-      <i v-if="shouldShowIcon(props, action)" :class="getIconClassByAction(action)"></i>
+      <!-- <i v-if="shouldShowIcon(props, action)" :class="getIconClassByAction(action)"></i> -->
+      <img v-if="shouldShowIcon(props, action)" style="height: 20px;width: 20px;" :src="getIconClassByAction(action)"
+         alt="none"/>
 
     </button>
     </el-tooltip>
