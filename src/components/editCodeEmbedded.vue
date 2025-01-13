@@ -44,12 +44,40 @@ export default {
     const editorContainer = ref();
     let editor = null;
     const codeEditDialogVisible = ref(false);
-    const selectedModule = ref('');
+    const selectedModule = ref('LSTM-故障诊断');
 
     onMounted(() => {
       editor = monaco.editor.create(editorContainer.value, {
-        value: '',
-        language: 'python'
+        theme: "vs-white", // 主题
+        value: "", // 默认显示的值
+        acceptSuggestionOnCommitCharacter: false, // 接受关于提交字符的建议
+        acceptSuggestionOnEnter: 'off', // 接受输入建议 "on" | "off" | "smart" 
+        language: "python",
+        folding: true, // 是否折叠
+        foldingHighlight: true, // 折叠等高线
+        foldingStrategy: "indentation", // 折叠方式  auto | indentation
+        showFoldingControls: "always", // 是否一直显示折叠 always | mouseover
+        disableLayerHinting: true, // 等宽优化
+        emptySelectionClipboard: false, // 空选择剪切板
+        selectionClipboard: false, // 选择剪切板
+        automaticLayout: true, // 自动布局
+        codeLens: false, // 代码镜头
+        scrollBeyondLastLine: false, // 滚动完最后一行后再滚动一屏幕
+        colorDecorators: true, // 颜色装饰器
+        accessibilitySupport: "off", // 辅助功能支持  "auto" | "off" | "on"
+        lineNumbers: "on", // 行号 取值： "on" | "off" | "relative" | "interval" | function
+        lineNumbersMinChars: 5, // 行号最小字符   number
+        enableSplitViewResizing: false,
+        readOnly: false, //是否只读  取值 true | false
+      });
+
+      fetch('src/assets/exampleCode/train_lstm.py')
+      .then(response => response.text())
+      .then(data => {
+        editor.setValue(data);
+      })
+      .catch(error => {
+        console.error('无法打开文件:', error);
       });
     });
 
@@ -86,14 +114,13 @@ export default {
     ]
 
     const pythonFilePaths = {
-        'faultDiagnosis-RandomForest': 'src/assets/exampleCode/My-FD-Algorithm-1.py',
-        'faultDiagnosis-SVM': 'src/assets/exampleCode/My-FD-Algorithm-1.py',
+        'faultDiagnosis-RandomForest': 'src/assets/exampleCode/randomForestTrain.py',
+        'faultDiagnosis-SVM': 'src/assets/exampleCode/svcTrain.py',
         'faultDiagnosis-LSTM': 'src/assets/exampleCode/train_lstm.py',
         'faultDiagnosis-GRU': 'src/assets/exampleCode/train_gru.py',
         'faultDiagnosis-ULCNN': 'src/assets/exampleCode/train_ulcnn.py',
         'faultDiagnosis-SIMmodel': 'src/assets/exampleCode/train_simmodel.py',
         'faultDiagnosis-fdmssw': 'src/assets/exampleCode/train_fdmssw.py',
-
         'healthEvaluation': 'src/assets/exampleCode/My-HE-Algorithm-1.py'
     }
 

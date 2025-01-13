@@ -49,6 +49,9 @@ const setIconOfAlgorithms = (label) => {
     case '自定义模块':
       iconName = 'custom-module-icon.svg'
       break
+    case '异常值检测':
+      iconName = 'abnormal-detection-icon.svg'
+      break
     case '层次分析模糊综合评估':
     case '层次逻辑回归评估':
     case '层次朴素贝叶斯评估':
@@ -122,15 +125,17 @@ function updateNodeDataByAction(id, action) {
 }
 
 function shouldShowIcon(props, action){
-  if(props.data.laglabel === '数据源' ){
+  if(props.data.laglabel === '数据源'){
     return false
   }else if(props.data.laglabel === '特征选择' && (action === '特征选择结果' | action === '相关系数矩阵热力图')){
     return true
-  }else if((props.data.laglabel === '特征选择' | props.data.laglabel === '层次分析模糊综合评估'| props.data.laglabel === '故障诊断') && action === '结果') {
+  }else if((props.data.laglabel === '特征选择' | props.data.laglabel === '层次分析模糊综合评估' | props.data.laglabel == '层次朴素贝叶斯评估' | props.data.laglabel == '层次逻辑回归评估'| props.data.laglabel === '故障诊断') && action === '结果') {
     return false
   }else if(props.data.laglabel !== '数据源' && action === '结果') {
     return true
-  }else if(props.data.laglabel == '层次分析模糊综合评估' && (action === '总结论' | action==='详情')) {
+  // }else if(props.data.laglabel == '异常值检测' && action === '结果') {
+  //   return false
+  }else if((props.data.laglabel == '层次分析模糊综合评估' || props.data.laglabel == '层次朴素贝叶斯评估' || props.data.laglabel == '层次逻辑回归评估') && (action === '总结论' | action==='详情')) {
     return true
   }else if(props.data.laglabel == '故障诊断' && (action === '连续样本指标变换' | action==='不同类型样本占比' | action==='原始信号波形图')) {
     if (props.id.includes('deeplearning') && action === '连续样本指标变换')
@@ -210,20 +215,31 @@ function delete_button(id){
               @click="updateNodeDataByAction(props.id, action, props)"
               style="border: 0;padding: 0;background: white;margin: 5px;"
           >
-            <i style="font-size: 30px;" v-if="shouldShowIcon(props, action)" :class="getIconClassByAction(action)"></i>
+            <!-- <i style="font-size: 30px;" v-if="shouldShowIcon(props, action)" :class="getIconClassByAction(action)"></i> -->
+            <img style="height: 30px; width: 30px;" :src="getIconClassByAction(action)" alt="none"/>
           </button>
         </el-tooltip>
       </div>
     </div>
   </div>
 
-  <Handle id="source-a" type="source" :position="Position.Right"/>
-  <Handle id="source-b" type="source" :position="Position.Bottom"/>
-  <Handle id="source-c" type="source" :position="Position.Left"/>
-  <Handle id="source-d" type="source" :position="Position.Top"/>
+  <Handle id="source-a" type="source" :position="Position.Right" class="custom-handle"/>
+  <Handle id="source-b" type="source" :position="Position.Bottom" class="custom-handle"/>
+  <Handle id="source-c" type="source" :position="Position.Left" class="custom-handle"/>
+  <Handle id="source-d" type="source" :position="Position.Top" class="custom-handle"/>
 </template>
 
 <style scoped>
+
+.custom-handle {
+  background-color: #97c0ec;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 2px solid #81c6db8a;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
 .delete-button{
   position: absolute;
   top: 3px;

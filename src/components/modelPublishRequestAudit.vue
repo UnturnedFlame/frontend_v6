@@ -11,7 +11,7 @@
       empty-text="暂无数据"
     >
       <!-- <el-table-column prop="id" label="ID" /> -->
-      <el-table-column prop="id" label="序号" width="100px" />
+      <!-- <el-table-column prop="id" label="序号" width="100px" /> -->
       <el-table-column prop="create_time" label="申请时间" />
       <el-table-column prop="applicant" label="申请人" />
       <el-table-column prop="modelName" label="申请发布模型" />

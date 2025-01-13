@@ -46,10 +46,10 @@
           style="display: inline-block; min-width: 100%; font-size: 20px"
         >
           <template #default="{ node, data }">
-              <span class="custom-tree-node" style="">
-                  <el-icon v-if="data.isModel" class="model-icon">
-                    <img src="@/assets/model-icon.svg" style="width: 20px; height: 20px;" alt="model">
-                 </el-icon>
+            <span class="custom-tree-node" style="">
+              <el-icon v-if="data.isModel" class="model-icon" @click="modelClick(data)">
+                <img src="@/assets/model-icon.svg" style="width: 20px; height: 20px;" alt="model">
+              </el-icon>
               <span class="node-label" >{{ getNodeLable(data) }}</span>
               <span class="node-actions" v-if="props.userRole === 'superuser' && !data.isModel">
                 <el-icon @click="appendNodeToTree(data)" :style="{ color: '#67c23a' }" v-if="data.disabled === true">
@@ -83,9 +83,9 @@
                 </el-icon>
               </span>
                <div v-if="data.isModel">
-                  <el-icon  class="model-icon" @click="modelClick(data)">
+                  <!-- <el-icon  class="model-icon" @click="modelClick(data)">
                     <i class="fa-solid fa-square-binary"></i>
-                  </el-icon>
+                  </el-icon> -->
                   
                   <el-popconfirm
                     title="是否确定删除该模型？"

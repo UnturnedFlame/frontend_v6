@@ -5,7 +5,7 @@
 
   <div class="table-container">
     <el-table :data="tableData" height="500px" :stripe="true" border :header-cell-style="{ backgroundColor: '#f5f7fa', color: '#606266' }">
-      <el-table-column prop="id" label="文件ID"  />
+      <!-- <el-table-column prop="id" label="文件ID"  /> -->
       <el-table-column prop="dataset_name" label="文件名"  />
       <el-table-column prop="description" label="文件描述" />
       <el-table-column prop="owner" label="所有者" />

@@ -187,7 +187,7 @@
         <el-aside class="el-aside-demo"
                   @mouseenter="isMouseOverSidebar = true; updateButtonVisibility()"
                   @mouseleave="isMouseOverSidebar = false; updateButtonVisibility()"
-                  :style="{ width: isMenuVisible ? '250px' : '0' }">
+                  :style="{ width: isMenuVisible ? '300px' : '0' }">
           <div style="width: 100%;">
             <!--      标题      -->
             <div class="aside-title"
@@ -250,7 +250,7 @@
                               :tooltip_text="'拖拽数据源组件至可视化建模区'"
                               :custom-styles="{
                                  backgroundColor: '#ffffff',
-                                 width: '250px',
+                                 width: '100%',
                                  height: '40px',
                               }"
                               :content-style="{
@@ -333,7 +333,7 @@
                                     :custom-styles="{
                                       // backgroundColor: '#1a5be8',
                                       backgroundColor: '#ffffff',
-                                      width: '250px',
+                                      width: '100%',
                                       height: '40px',
                                     }"
                                     :content-style="{
@@ -378,7 +378,7 @@
                               :tooltip_text="dataSourceNode.alias"
                               :custom-styles="{
                                  backgroundColor: '#ffffff',
-                                 width: '250px',
+                                 width: '100%',
                                  height: '40px',
                               }"
                               :content-style="{
@@ -400,7 +400,7 @@
               <my-collapse-item v-if="userRole === 'superuser'" name="2" :data="{name:'2'}" item-background="#ebeef4" style="border-bottom-width: 2px;">
                 <template #title>
                   <div style="padding: 10px;">
-                    <span style="font-size: 20px;">新增组件</span>
+                    <span style="font-size: 20px;">新增组件管理</span>
                   </div>
                 </template>
                 <template #arrow="{ isActive }">
@@ -585,7 +585,7 @@
         <div @mouseenter="isMouseOverButton = true; updateButtonVisibility()"
              @mouseleave="isMouseOverButton = false; updateButtonVisibility()"
              v-show="isShowButtonOfSidebar" class="sidebar-toggle" @click="toggleMenu"
-             :style="{ left: isMenuVisible ? '250px' : '0' }">
+             :style="{ left: isMenuVisible ? '300px' : '0' }">
           <i :class="['fa-solid', isMenuVisible ? 'fa-angle-left' : 'fa-angle-right']"></i>
         </div>
         <!-- 可视化建模区以及结果可视化区 -->
@@ -866,14 +866,13 @@
               <div class="configAreaPanelOfModelNode">
                 <my-collapse
                     v-model="activeNamesOfConfigPanelOfModelNode"
-                    :accordion="true"
                     theme="light"
                     style="background-color: #3c93f8"
                     @item-click="onItemClickOfConfigPanelOfModelNode"
                 >
                   <!-- 数据源配置 -->
                   <my-collapse-item v-if="containsMenuSettings.includes('4')" name="4-" :data="{name:'4-'}"
-                                    item-background="#ebeef4">
+                                    item-background="#ebeef4" :aria-expanded="true">
                     <template #title>
                       <div style="padding: 6px;">
                         <span class="menu-item-second">数据源配置</span>
@@ -977,7 +976,7 @@
                   </my-collapse-item>
                   <!-- 特征提取参数配置 -->
                   <my-collapse-item v-if="containsMenuSettings.includes('1.2')" name="1.2-" :data="{name:'1.2-'}"
-                                    item-background="#ebeef4">
+                                    item-background="#ebeef4" :aria-expanded="true"> 
                     <template #title>
                       <div style="padding: 6px;">
                         <span clas="menu-item-second">特征提取参数配置</span>
@@ -1031,7 +1030,7 @@
                   <!-- 选择特征选择的规则以及设定规则的阈值 -->
                   <my-collapse-item
                       v-if="containsMenuSettings.includes('1.3') && item.use_algorithm !== 'extra_feature_selection'"
-                      name="1.3" :data="{name:'1.3'}"
+                      name="1.3" :data="{name:'1.3'}" :aria-expanded="true"
                       item-background="#ebeef4">
                     <template #title>
                       <div style="padding: 6px;">
@@ -1078,7 +1077,7 @@
                   </my-collapse-item>
                   <!-- 无量纲化参数设置 -->
                   <my-collapse-item v-if="containsMenuSettings.includes('1.5')" name="1.5-" :data="{name:'1.5-'}"
-                                    item-background="#ebeef4">
+                                    item-background="#ebeef4" :aria-expanded="true">
                     <template #title>
                       <div style="padding: 6px;">
                         <span style="font-size: 16px;font-family: 'Microsoft YaHei';">无量纲化参数设置</span>
@@ -1099,7 +1098,7 @@
                   </my-collapse-item>
                   <!--小波变换参数配置-->
                   <my-collapse-item v-if="containsMenuSettings.includes('1.4')" name="1.4-" :data="{name:'1.4-'}"
-                                    item-background="#ebeef4">
+                                    item-background="#ebeef4" :aria-expanded="true">
                     <template #title>
                       <div style="padding: 6px;">
                         <span style="font-size: 16px;font-family: 'Microsoft YaHei';">小波变换参数配置</span>
@@ -1532,7 +1531,7 @@
                         />
                       </div>
 
-                      <!-- 插补可视化 -->
+                      <!-- 插值处理可视化 -->
                       <el-tabs v-model="activeName3" v-show="displayInterpolation && missionComplete" v-if="displayInterpolation || generateInterpolationFigure" type="border-card">
                         <el-tab-pane v-for="item in interpolationResultsOfSensors" :key="item.name" :label="item.label"
                                      :name="item.name">
@@ -1543,6 +1542,23 @@
                               :max-scale="7"
                               :min-scale="0.2"
                               :preview-src-list="[interpolationFigures[item.name - 1]]"
+                              :initial-index="4"
+                              fit="cover"
+                          />
+                        </el-tab-pane>
+                      </el-tabs>
+
+                      <!-- 异常值检测可视化 -->
+                      <el-tabs v-model="anamolyDetectionActiveName" v-show="displayAnomalyDetection && missionComplete" v-if="displayAnomalyDetection || generateAnomalyDetectionFigure" type="border-card">
+                        <el-tab-pane v-for="item in AnomalyDetectionResultsOfSensors" :key="item.name" :label="item.label"
+                                     :name="item.name">
+                          <el-image
+                              style="width: auto; height: 450px;"
+                              :src="AnomalyDetectionFigures[item.name - 1]"
+                              :zoom-rate="1.2"
+                              :max-scale="7"
+                              :min-scale="0.2"
+                              :preview-src-list="[AnomalyDetectionFigures[item.name - 1]]"
                               :initial-index="4"
                               fit="cover"
                           />
@@ -1685,7 +1701,7 @@
                   
                     <el-checkbox-group v-model="moduleResultToGenerateList" :min="1">
                     <!--  -->
-                      <el-checkbox size="large" v-for="module in contentJson.modules" :key="module" :label="module" :value="module"/>
+                      <el-checkbox size="large" v-for="module in filteredModules" :key="module" :label="module" :value="module"/>
                     </el-checkbox-group>
                   </div>
                 </div>
@@ -1784,9 +1800,9 @@
           <el-input
               style="width: 200px;"
               v-model="modelInfoForm.name"
-              autocomplete="off"/>
+              autocomplete="off"/>    
         </el-form-item>
-          
+
         <el-form-item 
           label="模型描述" 
           :label-width='140' 
@@ -1905,7 +1921,7 @@ const handleLoadModel = (store: any) => {
   //   // 0.5秒后执行的操作
   //   restoreCanvas(objects)
   // }, 500);
-
+  clearModelOfViewFlow()
   handleClear()
   updateStatus('当前模型已保存')
   modelHasBeenSaved = true
@@ -3190,28 +3206,28 @@ function checkModelOrder() {
           return algorithmStr.match('LSTM的故障诊断') || algorithmStr.match('GRU的故障诊断') || algorithmStr.match('一维卷积深度学习模型的故障诊断') || algorithmStr.match('时频图深度学习模型的故障诊断')
         }
         // 规定插值处理只能是在模型中的开始位置
-        if (moduleStr.match('插值处理')) {
-          if (moduleStr.indexOf('插值处理') != 0) {
-            ElMessage({
-              showClose: true,
-              message: '插值处理只能处在模型中的开始位置',
-              type: 'warning'
-            })
-            let preModule = linkedList.searchPre('插值处理')
-            let sourceId = labelToId(preModule)
-            let targetId = labelToId('插值处理')
+        // if (moduleStr.match('插值处理')) {
+        //   if (moduleStr.indexOf('插值处理') != 0) {
+        //     ElMessage({
+        //       showClose: true,
+        //       message: '插值处理只能处在模型中的开始位置',
+        //       type: 'warning'
+        //     })
+        //     let preModule = linkedList.searchPre('插值处理')
+        //     let sourceId = labelToId(preModule)
+        //     let targetId = labelToId('插值处理')
 
-            // 通过jsPlumb实例对象的select方法选择连线，并设置连线的样式
-            plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
-              stroke: '#E53935',
-              strokeWidth: 7,
-              outlineStroke: 'transparent',
-              outlineWidth: 5,
+        //     // 通过jsPlumb实例对象的select方法选择连线，并设置连线的样式
+        //     plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
+        //       stroke: '#E53935',
+        //       strokeWidth: 7,
+        //       outlineStroke: 'transparent',
+        //       outlineWidth: 5,
 
-            });
-            return false
-          }
-        }
+        //     });
+        //     return false
+        //   }
+        // }
         if (moduleStr.match('故障预测')) {
           // 故障预测之前必须进行故障诊断
           if (moduleStr.indexOf('故障预测') <= 0) {
@@ -4186,6 +4202,9 @@ const setIconOfAlgorithms = (label: string) => {
     case '自定义模块':
       iconName = 'custom-module-icon.svg'
       break
+    case '异常值检测':
+      iconName = 'abnormal-detection-icon.svg'
+      break
     case '层次分析模糊综合评估':
     case '层次逻辑回归评估':
     case '层次朴素贝叶斯评估':
@@ -4450,7 +4469,7 @@ const extraAlgorithmStatement = ref({})
 const rules = {
   name: [
     {required: true, message: "请输入模型名", trigger: "blur"},
-    // { pattern:/^[\u4e00-\u9fa5_a-zA-Z0-9]+$/, message: '请输入中英文/数字/下划线', trigger: 'blur' },
+    { pattern:/^[\u4e00-\u9fa5_a-zA-Z0-9]+$/, message: '请输入中英文/数字/下划线', trigger: 'blur' },
     {validator: validateModelname, trigger: 'blur'}
   ],
   description: [
@@ -4509,6 +4528,12 @@ const canShutdown = ref(true)
 const menuList2 = ref([
   {
     label: '数据预处理', id: '1', options: [
+      {
+        label: '异常值检测', id: '1.6', use_algorithm: null, parameters: {
+          'nan_detection': {},  // 检测缺失值
+          // 'abnormal_detection': {}
+      }
+      },
       {
         label: '插值处理', id: '1.1', use_algorithm: null, parameters: {
           'neighboring_values_interpolation': {},
@@ -5783,26 +5808,26 @@ const checkModel = () => {
         }
         // 规定插值处理只能是在模型中的开始位置
         if (moduleStr.match('插值处理')) {
-          if (moduleStr.indexOf('插值处理') != 0) {
-            ElMessage({
-              showClose: true,
-              message: '插值处理只能处在模型中的开始位置',
-              type: 'warning'
-            })
-            let preModule = linkedList.searchPre('插值处理')
-            let sourceId = labelToId(preModule)
-            let targetId = labelToId('插值处理')
+          // if (moduleStr.indexOf('插值处理') != 0) {
+          //   ElMessage({
+          //     showClose: true,
+          //     message: '插值处理只能处在模型中的开始位置',
+          //     type: 'warning'
+          //   })
+          //   let preModule = linkedList.searchPre('插值处理')
+          //   let sourceId = labelToId(preModule)
+          //   let targetId = labelToId('插值处理')
 
-            // 通过jsPlumb实例对象的select方法选择连线，并设置连线的样式
-            plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
-              stroke: '#E53935',
-              strokeWidth: 7,
-              outlineStroke: 'transparent',
-              outlineWidth: 5,
+          //   // 通过jsPlumb实例对象的select方法选择连线，并设置连线的样式
+          //   plumbIns.select({source: sourceId, target: targetId}).setPaintStyle({
+          //     stroke: '#E53935',
+          //     strokeWidth: 7,
+          //     outlineStroke: 'transparent',
+          //     outlineWidth: 5,
 
-            });
-            return
-          }
+          //   });
+          //   return
+          // }
         }
         if (moduleStr.match('故障预测')) {
           // 故障预测之前必须进行故障诊断
@@ -7513,6 +7538,33 @@ const interpolationDisplay = (resultsObject: any) => {
 
 
 
+// 异常值检测可视化
+const displayAnomalyDetection = ref(false)
+const anamolyDetectionActiveName = ref('1')
+const anamolyDetectionResult = ref('')
+const generateAnomalyDetectionFigure = ref(false)
+const AnomalyDetectionFigures = ref([])            // 异常值检测结果图像
+const AnomalyDetectionResultsOfSensors = ref([])   // 异常值检测结果中有几个传感器
+
+const anomalyDetectionDisplay = (resultsObject: any) => {
+  let sensorId = 0
+  AnomalyDetectionFigures.value.length = 0
+  AnomalyDetectionResultsOfSensors.value.length = 0
+  for (const [key, value] of Object.entries(resultsObject)) {
+    if (key === '检测结果'){
+      anamolyDetectionResult.value = value
+      continue
+    }
+    sensorId += 1
+    AnomalyDetectionFigures.value.push('data:image/png;base64,' + value)
+    if (!resultsToGenerateConclusion['anamolyDetection']['imageBase64']){
+      resultsToGenerateConclusion['anamolyDetection']['imageBase64'] = value
+      resultsToGenerateConclusion['anamolyDetection']['text'] = '异常值检测结果'
+    }
+    AnomalyDetectionResultsOfSensors.value.push({label: key.split('_')[0], name: sensorId.toString()})
+  }
+}
+
 
 // 无量纲化可视化
 const activeName4 = ref('1')
@@ -7650,6 +7702,7 @@ let resultsToGenerateConclusion = {
   'faultDiagnosis': {'imageBase64': "", 'text': ""},
   'faultPrediction': {'imageBase64': "", 'text': ""},
   'interpolation': {'imageBase64': "", 'text': ""},
+  'anamolyDetection': {'imageBase64': "", 'text': ""},
   'normalization': {'imageBase64': "", 'text': ""},
   'wavelet': {'imageBase64': "", 'text': ""},
 }
@@ -7671,19 +7724,61 @@ const clearGenerateResult = () => {
 }
 
 const selectAllModuleToGenerateResult = ref(false)
+const moduleResultToGenerateList = ref<string[]>([])
 
-// 处理全选输出结果的逻辑
+const filteredModules = computed(() => {
+  return contentJson.schedule.filter(item => item!='异常值检测' && item!='无量纲化' && item!='数据源');
+});
+
+// watch(moduleResultToGenerateList.value, (newValue, oldValue)=>{
+//   if (newValue.length == contentJson.schedule.length) {
+//     selectAllModuleToGenerateResult.value = true;
+//   } else {
+//     selectAllModuleToGenerateResult.value = false;
+//   }
+// })
+
+// 处理全选逻辑
 const toggleSelectAll = () => {
   if (selectAllModuleToGenerateResult.value) {
-    moduleResultToGenerateList.value = [...contentJson.schedule];
+    moduleResultToGenerateList.value = [...filteredModules.value];
+    
   } else {
-    moduleResultToGenerateList.value = [];
+    // 取消全选时至少保留第一项
+    if (moduleResultToGenerateList.value.length > 0) {
+      moduleResultToGenerateList.value = [filteredModules.value[1]];
+    } else {
+      moduleResultToGenerateList.value = [];
+    }
   }
   // 去除“数据源”这一项
   moduleResultToGenerateList.value = moduleResultToGenerateList.value.filter(item => item !== '数据源');
 };
 
-const moduleResultToGenerateList = ref<string[]>([])
+// 监听 moduleResultToGenerateList 的变化，更新 selectAll 状态
+watch(moduleResultToGenerateList, (newVal) => {
+  if (newVal.length === (filteredModules.value.length)) {
+    selectAllModuleToGenerateResult.value = true;
+  } else {
+    selectAllModuleToGenerateResult.value = false;
+  }
+
+  // 确保至少保留第一项
+  if (newVal.length === 0 && filteredModules.value.length > 0) {
+    moduleResultToGenerateList.value = [filteredModules.value[1]];
+  }
+});
+// const toggleSelectAll = () => {
+//   if (selectAllModuleToGenerateResult.value) {
+//     moduleResultToGenerateList.value = [...contentJson.schedule];
+//   } else {
+//     moduleResultToGenerateList.value = [];
+//   }
+//   // 去除“数据源”这一项
+//   moduleResultToGenerateList.value = moduleResultToGenerateList.value.filter(item => item !== '数据源');
+// };
+
+
 const outputConfigVisible = ref(false)
 
 // 打开结果输出配置面板
@@ -7751,7 +7846,7 @@ const generateConclusion = async() => {
   })
 
   console.log("generateConclusion resultsToGenerateConclusion: ", resultsToGenerateConclusion)
-  var outline = "时间："+ new Date().toLocaleString() + "<br/>" + "数据集："+ usingDatafile.value + "<br/>" + "模型名称："+ modelLoaded.value + "<br/>" + "包含模块："+ contentJson.schedule.join(', ')
+  var outline = "时间："+ new Date().toLocaleString() + "<br/>" + "数据集："+ usingDatafile.value + "<br/>" + "模型名称："+ modelLoadedName.value + "<br/>" + "包含模块："+ contentJson.schedule.join(', ')
   // console.log('resultsToGenerateOutput: ', resultsToGenerateConclusion)
   resultsToGenerateConclusion.outline = outline
   let formData = new FormData()
@@ -7776,7 +7871,6 @@ const generateConclusion = async() => {
     console.log('生成总结报告失败：', error)
   })
   }, 500)
-  
 }
 
 // const downloadFile = (data: BlobPart, filename: string) => {
@@ -7814,6 +7908,7 @@ const resultsViewClear = () => {
   displayFaultDiagnosis.value = false
   displayFaultRegression.value = false
   displayInterpolation.value = false
+  displayAnomalyDetection.value = false
   displayNormalization.value = false
   displayDenoise.value = false
   displayRawDataWaveform.value = false
@@ -7826,6 +7921,7 @@ const resultsViewClear = () => {
   generateDenoiseFigure.value = false
   generateNormalizationFigure.value = false
   generateInterpolationFigure.value = false
+  generateAnomalyDetectionFigure.value = false
   generateFaultRegressionFigure.value = false
 
   currentDisplayedItem = ''
@@ -8016,6 +8112,22 @@ const generateResultsToDisplay = (moduleName: string, display: boolean) => {
         }
       }
       
+    } else if (moduleName == '异常值检测'){
+      let results_to_show = responseResults.异常值检测
+      if (currentDisplayedItem != '异常值检测' && display) {
+        currentDisplayedItem = '异常值检测'
+        displayAnomalyDetection.value = display
+        anomalyDetectionDisplay(results_to_show)
+      } else {
+        if(display && currentDisplayedItem == '异常值检测'){
+          displayAnomalyDetection.value = display
+        }
+        if(!display){
+         // 仅生成报告所需图片结果而不显示
+          generateAnomalyDetectionFigure.value = true
+          anomalyDetectionDisplay(results_to_show)
+        }
+      }
     } else if (moduleName == '数据源'){
       ElMessage.warning("数据源无运行结果")
     } else {
@@ -8490,7 +8602,7 @@ const updateButtonVisibility = () => {
 };
 </script>
 
-<style>
+<style scoped>
 body {
   margin: 0;
 }
@@ -9119,7 +9231,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
   box-shadow: 3px 0 3px rgba(0, 0, 0, 0.2);
   z-index: 2;
   display: flex;
-  width: 250px;
+  width: 350px;
   align-items: center;
   font-family: 'Microsoft YaHei', sans-serif; // 添加字体属性
 }

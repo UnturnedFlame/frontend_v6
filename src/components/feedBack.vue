@@ -11,7 +11,7 @@
       empty-text="暂无数据"
     >
       <!-- <el-table-column prop="id" label="ID" /> -->
-      <el-table-column prop="id" label="序号" width="70px" />
+      <!-- <el-table-column prop="id" label="序号" width="70px" /> -->
       <el-table-column prop="username" label="反馈用户" />
       <el-table-column prop="time" label="反馈时间" />
       <el-table-column prop="model" label="使用模型" />

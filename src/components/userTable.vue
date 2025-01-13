@@ -24,7 +24,7 @@
   <div class="table-container">
     <el-table :data="tableData" style="width: 100%;" height="500px" 
     :stripe="true" :header-cell-style="{ backgroundColor: '#f5f7fa', color: '#606266' }" border empty-text="暂无数据">
-      <el-table-column prop="id" label="ID" />
+      <!-- <el-table-column prop="id" label="ID" /> -->
       <el-table-column prop="jobNumber" label="工号"  />
       <el-table-column prop="username" label="用户名"  />
       <!-- <el-table-column prop="password" label="密码" /> -->

@@ -60,7 +60,7 @@
           <div style="display: flex; flex-direction: row">
             <!-- 上传增值服务的算法源文件 -->
             <div>
-              <span><span style="color: red">*</span>选择要上传的源文件：</span>
+              <span><span style="color: red">*</span>选择算法源文件：</span>
               <a-upload
                 :file-list="pythonFileList"
                 :before-upload="beforeUploadAlgorithmFile"
@@ -111,7 +111,7 @@
               (uploadAlgorithmForm.algorithmType === '无量纲化' && uploadAlgorithmForm.useLog)
             "
           >
-            <span><span style="color: red">*</span>选择使用的模型文件：</span>
+            <span><span style="color: red">*</span>选择模型权重文件：</span>
             <a-upload
               :file-list="modelFileList"
               :before-upload="beforeUploadModelFile"
@@ -351,6 +351,12 @@
     <el-scrollbar :height="600">
       <div v-if="templateName === '插值处理'">
         <div>
+          <h3>附：示例代码源文件下载链接（点击下载）</h3>
+          <a
+            href="src/assets/exampleCode/My-Interpolation.py"
+            download="example-interpolation.py"
+            >插值处理示例代码源文件</a
+          >
           <h1>基本结构</h1>
           <h2>1. 数据输入</h2>
           <h3>插值处理的私有算法作为脚本运行时，需要从主程序获取两个参数：</h3>
@@ -440,6 +446,12 @@
       </div>
       <div v-if="templateName === '故障预测'">
         <div>
+          <h3>附：示例代码源文件下载链接（点击下载）</h3>
+          <a
+            href="src/assets/exampleCode/My-FaultPredict-Algorithm-1.py"
+            download="example-fault-prediction.py"
+            >故障预测示例代码源文件</a
+          >
           <h1>基本结构</h1>
           <h2>1. 数据输入</h2>
           <h3>故障预测的私有算法作为脚本运行时，需要从主程序获取两个参数：</h3>
@@ -493,6 +505,12 @@
       <!-- 无量纲化的专有算法模版 -->
       <div v-if="templateName === '无量纲化'">
         <div>
+          <h3>附：示例代码源文件下载链接（点击下载）</h3>
+          <a
+            href="src/assets/exampleCode/My-Nor-Algorithm-1.py"
+            download="example-normalization.py"
+            >无量纲化示例代码源文件</a
+          >
           <h1>基本结构</h1>
           <h2>1. 数据输入</h2>
           <h3>故障预测的私有算法作为脚本运行时，需要从主程序获取三个参数：</h3>
@@ -584,6 +602,12 @@
       <!-- 小波变换的专有算法模板 -->
       <div v-if="templateName === '小波变换'">
         <div>
+          <h3>附：示例代码源文件下载链接（点击下载）</h3>
+          <a
+            href="src/assets/exampleCode/My-Wavelet-1.py"
+            download="example-wavelet-transform.py"
+            >小波变换示例代码源文件</a
+          >
           <h1>基本结构</h1>
           <h2>1. 数据输入</h2>
           <h3>小波变换的专有算法作为脚本运行时，主要需要从主程序获取两个参数：</h3>
@@ -605,12 +629,6 @@
           </code> -->
 
           <h2>3. 私有算法代码模板示例</h2>
-          <h3>小波变换的专有算法模板代码如下：</h3>
-          <a
-            href="src/assets/exampleCode/My-Wavelet-1.py"
-            download="example-wavelet-transform.py"
-            >点击下载示例代码源文件</a
-          >
           <a-image :width="500" src="src/assets/wavelet-transform-outline.png"></a-image>
           <h3>其中需要注意，定义的小波变换处理方法要在同一个源文件中。</h3>
         </div>

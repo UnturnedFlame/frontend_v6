@@ -36,6 +36,7 @@
         height="500px"
         :stripe="true"
         border
+        empty-text="暂无数据"
         :header-cell-style="{ backgroundColor: '#f5f7fa', color: '#606266' }"
       >
         <el-popover
@@ -46,7 +47,7 @@
           content="这是模型信息"
         >
         </el-popover>
-        <el-table-column property="id" label="序号" />
+        <!-- <el-table-column property="id" label="序号" /> -->
         <el-table-column property="model_name" label="模型名称" />
         <el-table-column property="author" label="作者" />
         <el-table-column property="jobNumber" label="工号" />
@@ -199,16 +200,18 @@ const modelParams = ref([]); // {'模块名': xx, '算法': xx, '参数': xx}
 
 const showModelInfo = (row) => {
   let objects = JSON.parse(row.model_info);
-  let node_list = objects.nodeList; // 模型节点信息
-  let connection = objects.connection; // 模型连接顺序
+  console.log("showModelInfo objects: ", objects)
+  let node_list = objects.nodeList.nodes; // 模型节点信息
+  console.log("------", node_list)
+  let connection = objects.modelConfig.modules; // 模型连接顺序
 
   modelName.value = row.model_name;
   modelAlgorithms.value = connection;
   modelParams.value.length = 0;
-  node_list.forEach((element) => {
+  node_list.forEach((node) => {
     let item = { 模块名: "", 算法: "" };
-    item.模块名 = element.label;
-    item.算法 = labelsForAlgorithms[element.use_algorithm];
+    item.模块名 = node.nodeInfo.label;
+    item.算法 = labelsForAlgorithms[node.nodeInfo.use_algorithm];
     modelParams.value.push(item);
   });
 };

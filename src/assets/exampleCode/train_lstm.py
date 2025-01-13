@@ -59,16 +59,19 @@ train_dataloader = DataLoader(dataset=train_dataset, batch_size=40, shuffle=True
 # 模型定义以及超参数设置
 # 在定义lstm模型时，指定input_size为传感器的数量
 lstm_model = LSTM(input_size=7, hidden_size=64, num_layers=4, output_size=1).to(device)
+
 loss = nn.BCEWithLogitsLoss()
+# loss = nn.MSELoss()
+
 optimizer = torch.optim.Adam(lstm_model.parameters())
+# optimizer = torch.optim.ASGD(lstm_model.parameters())
+
 epochs = 20
 
 # 训练模型
 for epoch in range(epochs):
     lstm_model.train()
     for X, y in train_dataloader:
-        # X = X.to(device)
-        # y = y.to(device)
         pre = lstm_model(X)
         l = loss(pre, y)
         

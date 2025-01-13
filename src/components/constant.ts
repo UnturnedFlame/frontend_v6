@@ -62,7 +62,8 @@ export const labelsForAlgorithms = {
     additional_model_four_multiple_deeplearning: '多传感器决策级融合的深度学习故障诊断',
     additional_model_five_deeplearning: '基于单传感器的知识型 1D 时域深度学习故障诊断',
     additional_model_six_deeplearning: '基于单传感器的时域和频域协同注意学习故障诊断',
-    additional_model_seven_deeplearning: '基于单传感器的多域深度特征融合故障诊断'
+    additional_model_seven_deeplearning: '基于单传感器的多域深度特征融合故障诊断',
+    nan_detection: '缺失值检测'
 };
 
 // 算法介绍
